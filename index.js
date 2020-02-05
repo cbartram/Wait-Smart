@@ -1,7 +1,7 @@
 require('dotenv').config();
 const moment = require('moment');
 const crypto = require('crypto');
-const request = require('request');
+const request = require('request-promise-native');
 const Api = require('lambda-api-router');
 
 const { URL } = require('./src/constants');
@@ -11,7 +11,7 @@ const {
 } = process.env;
 const app = new Api();
 
-app.get('/foo/bar', (req, res) => {
+app.get('/', async (req, res) => {
     const today = moment.utc().format("ddd, DD MMM YYYY HH:mm:ss") + " GMT";
 
     const signatureBuilder = crypto.createHmac("sha256", CLIENT_SECRET);
@@ -29,30 +29,23 @@ app.get('/foo/bar', (req, res) => {
 
     };
 
-    request(options, function (error, response) {
-        if (error) throw new Error(error);
-        const { Token } = JSON.parse(response.body);
+    const { Token } = JSON.parse(await request(options));
+    console.log("[INFO] API Access Token:", Token);
 
-        console.log("API Access Token:", Token);
-
-        const ridesOptions = {
-            'method': 'GET',
-            'url': URL + '/pointsOfInterest',
-            'headers': {
-                'Date': today,
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Accept': 'application/json',
-                'X-UNIWebService-ApiKey': 'AndroidMobileApp',
-                'X-UNIWebService-Token': Token,
-                'Accept-Language': 'en-US'
-            },
-        };
-        request(ridesOptions, function (error, response) {
-            if (error) throw new Error(error);
-            res.json(response.body);
-        });
-    });
-
+    const ridesOptions = {
+        'method': 'GET',
+        'url': URL + '/pointsOfInterest',
+        'headers': {
+            'Date': today,
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Accept': 'application/json',
+            'X-UNIWebService-ApiKey': 'AndroidMobileApp',
+            'X-UNIWebService-Token': Token,
+            'Accept-Language': 'en-US'
+        },
+    };
+    const ridesResponse = await request(ridesOptions);
+    res.json(JSON.parse(ridesResponse));
 });
 
 
