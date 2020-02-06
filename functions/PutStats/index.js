@@ -107,11 +107,13 @@ const createBatches = (data) => {
         }
     }
 
+    const now = moment().valueOf();
+      console.log('[INFO] Now: ', now);
     currBatch.RequestItems[DYNAMODB_TABLE_NAME].push({
         PutRequest: {
             Item: {
                 pid: 'RIDE',
-                sid: `${moment().toISOString()}#${data[i].wait}#${data[i].id}`,
+                sid: `v_${i}_${now}`,
                 ...data[i],
             }
         }

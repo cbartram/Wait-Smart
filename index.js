@@ -1,51 +1,34 @@
 require('dotenv').config();
-const moment = require('moment');
-const crypto = require('crypto');
-const request = require('request-promise-native');
 const Api = require('lambda-api-router');
-
-const { URL } = require('./src/constants');
+const AWS = require('aws-sdk');
 const {
-    CLIENT_ID,
-    CLIENT_SECRET
-} = process.env;
+    getUniversalAccessToken,
+    getPointsOfInterest
+} = require('./src/utils');
+const { DYNAMODB_TABLE_NAME } = process.env;
+
+AWS.config.update({
+   region: 'us-east-1'
+});
+const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
 const app = new Api();
 
 app.get('/', async (req, res) => {
-    const today = moment.utc().format("ddd, DD MMM YYYY HH:mm:ss") + " GMT";
+    const access_token = await getUniversalAccessToken();
+    const poi = await getPointsOfInterest(access_token);
+    res.json(poi);
+});
 
-    const signatureBuilder = crypto.createHmac("sha256", CLIENT_SECRET);
-    signatureBuilder.update(CLIENT_ID + "\n" + today + "\n");
-    const signature = signatureBuilder.digest("base64").replace(/=$/, "=");
-
-    const options = {
-        'method': 'POST',
-        'url': URL,
-        'headers': {
-            'Date': today,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ apiKey: CLIENT_ID, signature })
-
-    };
-
-    const { Token } = JSON.parse(await request(options));
-    console.log("[INFO] API Access Token:", Token);
-
-    const ridesOptions = {
-        'method': 'GET',
-        'url': URL + '/pointsOfInterest',
-        'headers': {
-            'Date': today,
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Accept': 'application/json',
-            'X-UNIWebService-ApiKey': 'AndroidMobileApp',
-            'X-UNIWebService-Token': Token,
-            'Accept-Language': 'en-US'
-        },
-    };
-    const ridesResponse = await request(ridesOptions);
-    res.json(JSON.parse(ridesResponse));
+app.get('/rides', async (req, res) => {
+    const response = await ddb.query({
+        TableName: DYNAMODB_TABLE_NAME,
+        KeyConditionExpression: 'pid = :pid and begins_with()',
+        ExpressionAttributeValues: {
+            ':pid': 'RIDE',
+            ':rkey': 2015
+        }
+    }).promise();
+    res.json(response);
 });
 
 
