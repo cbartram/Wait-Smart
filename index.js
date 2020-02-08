@@ -42,11 +42,9 @@ app.get('/rides/:id', async (req, res) => {
 
         // Find additional ride meta-data from cache
         const rideMetaData = JSON.parse(await cache.getAsync(req.params.id));
-        console.log('[INFO] Ride Meta-Data: ', rideMetaData);
         if(rideMetaData) {
-            res.json({...rideMetaData, waitTimes: Items});
+            res.json({...rideMetaData, waitTimes: Items.map(({ pid, sid, id, wait}) => ({ timestamp: sid, id, waitTime: wait }) )});
         } else {
-            // TODO lookup the ride meta-data?
             console.log('[INFO] Cache did not contain meta-data for ride: ', req.params.Id);
             res.json(Items);
         }
@@ -54,7 +52,6 @@ app.get('/rides/:id', async (req, res) => {
         console.log('[ERROR] Failed to query for ride wait times within given range.', err);
         res.status(500).json({ message: 'Failed to query for ride wait times within the given range.', error: err });
     }
-
 });
 
 
