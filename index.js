@@ -19,24 +19,6 @@ app.get('/', async (req, res) => {
     try {
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
-
-        const cachePromises = [];
-        const promises = [];
-        poi.Rides.forEach(ride => {
-            console.log('[INFO] Checking Cache for ride: ', ride.Id);
-            cachePromises.push(cache.getAsync(ride.Id));
-        });
-        const cachedItems = await Promise.all(cachePromises);
-        cachedItems.forEach((ride, idx) => {
-            const realRide = poi.Rides[idx];
-            delete realRide.WaitTime;
-           if(!ride) {
-               console.log('[INFO] Inserting Ride into cache: ', realRide);
-               cache.set(realRide.Id, JSON.stringify(realRide));
-           } else {
-               console.log('[INFO] Found cached ride: ', realRide.Id);
-           }
-        });
         res.json(poi);
     } catch(err) {
         console.log('[ERROR] Failed to retrieve data from Universal API: ', err);
@@ -53,13 +35,13 @@ app.get('/rides/:id', async (req, res) => {
             KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
             ExpressionAttributeValues: {
                 ':pid': `RIDE-${req.params.id}`,
-                ':before': moment().subtract(2, 'hours').valueOf(),
+                ':before': moment().subtract(10, 'minutes').valueOf(),
                 ':now': moment().valueOf()
             }
         }).promise();
 
         // Find additional ride meta-data from cache
-        const rideMetaData = await cache.getAsync(req.params.Id);
+        const rideMetaData = JSON.parse(await cache.getAsync(req.params.id));
         console.log('[INFO] Ride Meta-Data: ', rideMetaData);
         if(rideMetaData) {
             res.json({...rideMetaData, waitTimes: Items});

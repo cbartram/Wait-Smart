@@ -1,9 +1,7 @@
 const { REDIS_PASSWORD } = process.env;
 const redis = require('redis');
 const bluebird = require('bluebird');
-
-bluebird.promisifyAll(redis.RedisClient.prototype);
-bluebird.promisifyAll(redis.Multi.prototype);
+bluebird.promisifyAll(redis);
 
 const { REDIS_HOST } = require('./constants');
 
