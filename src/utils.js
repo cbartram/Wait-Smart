@@ -18,11 +18,10 @@ const { URL } = require('./constants');
  * for one hour after the retrieval time.
  */
 const getUniversalAccessToken = async () => {
-    const today = moment.utc().format("ddd, DD MMM YYYY HH:mm:ss") + " GMT";
-
-    const signatureBuilder = crypto.createHmac("sha256", CLIENT_SECRET);
-    signatureBuilder.update(CLIENT_ID + "\n" + today + "\n");
-    const signature = signatureBuilder.digest("base64").replace(/=$/, "=");
+    const today = `${moment.utc().format('ddd, DD MMM YYYY HH:mm:ss')} GMT`;
+    const signatureBuilder = crypto.createHmac('sha256', CLIENT_SECRET);
+    signatureBuilder.update(`${CLIENT_ID}\n${today}\n`);
+    const signature = signatureBuilder.digest('base64').replace(/=$/, '\u003d');
 
     const options = {
         'method': 'POST',
@@ -32,7 +31,6 @@ const getUniversalAccessToken = async () => {
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ apiKey: CLIENT_ID, signature })
-
     };
 
     try {
@@ -57,7 +55,7 @@ const getPointsOfInterest = async (access_token) => {
         'method': 'GET',
         'url': URL + '/pointsOfInterest',
         'headers': {
-            'Date': moment.utc().format("ddd, DD MMM YYYY HH:mm:ss") + " GMT",
+            'Date': `${moment.utc().format("ddd, DD MMM YYYY HH:mm:ss")} GMT`,
             'Content-Type': 'application/json; charset=UTF-8',
             'Accept': 'application/json',
             'X-UNIWebService-ApiKey': 'AndroidMobileApp',
