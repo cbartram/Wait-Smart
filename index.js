@@ -15,9 +15,14 @@ const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
 const app = new Api();
 
 app.get('/', async (req, res) => {
-    const access_token = await getUniversalAccessToken();
-    const poi = await getPointsOfInterest(access_token);
-    res.json(poi);
+    try {
+        const access_token = await getUniversalAccessToken();
+        const poi = await getPointsOfInterest(access_token);
+        res.json(poi);
+    } catch(err) {
+        console.log('[ERROR] Failed to retrieve data from Universal API: ', err);
+        res.status(500).json({ message: 'Failed to retrieve data from Universal API', error: err });
+    }
 });
 
 app.get('/rides/:id', async (req, res) => {

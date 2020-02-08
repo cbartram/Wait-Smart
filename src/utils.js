@@ -8,7 +8,8 @@ const crypto = require('crypto');
 const request = require('request-promise-native');
 const {
     CLIENT_ID,
-    CLIENT_SECRET
+    CLIENT_SECRET,
+    NODE_ENV
 } = process.env;
 const { URL } = require('./constants');
 
@@ -37,7 +38,7 @@ const getUniversalAccessToken = async () => {
     try {
         const response = await request(options);
         const { Token } = JSON.parse(response);
-        console.log('[INFO] Successfully retrieved Universal OAuth access_token: ', Token);
+        NODE_ENV !== 'test' && console.log('[INFO] Successfully retrieved Universal OAuth access_token: ', Token);
         return Token;
     } catch(err) {
         console.log('[ERROR] There was an error retrieving the universal access_token.', err);

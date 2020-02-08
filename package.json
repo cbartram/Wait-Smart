@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node src/index.js",
     "start:dev": "nodemon test.js",
-    "test": "mocha"
+    "test": "NODE_ENV=test ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit"
   },
   "repository": {
     "type": "git",
@@ -36,7 +36,7 @@
   "dependencies": {
     "aws-sdk": "^2.612.0",
     "dotenv": "^8.2.0",
-    "lambda-api-router": "^1.0.1",
+    "lambda-api-router": "^1.0.2",
     "moment": "^2.24.0",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.8"
