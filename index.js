@@ -1,4 +1,5 @@
 require('dotenv').config();
+const moment = require('moment');
 const Api = require('lambda-api-router');
 const AWS = require('aws-sdk');
 const {
@@ -19,16 +20,29 @@ app.get('/', async (req, res) => {
     res.json(poi);
 });
 
-app.get('/rides', async (req, res) => {
-    const response = await ddb.query({
-        TableName: DYNAMODB_TABLE_NAME,
-        KeyConditionExpression: 'pid = :pid and begins_with()',
-        ExpressionAttributeValues: {
-            ':pid': 'RIDE',
-            ':rkey': 2015
-        }
-    }).promise();
-    res.json(response);
+app.get('/rides/:id', async (req, res) => {
+
+    const before = moment().subtract(2, 'hours');
+    const now = moment();
+    console.log('[INFO] Before: ', before.toISOString(), before.valueOf());
+    console.log('[INFO] Now: ', now.toISOString(), now.valueOf());
+
+    try {
+        const { Items } = await ddb.query({
+            TableName: DYNAMODB_TABLE_NAME,
+            KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
+            ExpressionAttributeValues: {
+                ':pid': `RIDE-${req.params.id}`,
+                ':before': `${before}`,
+                ':now': `${now}`
+            }
+        }).promise();
+        res.json(Items);
+    } catch(err) {
+        console.log('[ERROR] Failed to query for ride wait times within given range. ', err);
+        res.status(500).json({ message: 'Failed to query for ride wait times within the given range. ', error: err });
+    }
+
 });
 
 

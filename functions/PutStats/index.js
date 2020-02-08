@@ -35,9 +35,14 @@ const getAccessToken = async () => {
 
     };
 
-    const { Token } = JSON.parse(await request(options));
-    console.log("[INFO] Universal API Access Token:", Token);
-    return Token;
+    try {
+        const {Token} = JSON.parse(await request(options));
+        console.log("[INFO] Universal API Access Token:", Token);
+        return Token;
+    } catch(err) {
+        console.log('[ERROR] Failed to fetch API Access Token from Universal: ', err);
+        return null;
+    }
 };
 
 
@@ -60,8 +65,13 @@ const getWaitTimes = async (token) => {
             'Accept-Language': 'en-US'
         },
     };
-    const data = JSON.parse(await request(ridesOptions));
-    return data.Rides.map(ride => ({ id: ride.Id, wait: ride.WaitTime }))
+    try {
+        const data = JSON.parse(await request(ridesOptions));
+        return data.Rides.map(ride => ({ id: ride.Id, wait: ride.WaitTime }))
+    } catch(err) {
+        console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
+        return null;
+    }
 };
 
 /**
@@ -98,26 +108,23 @@ const createBatches = (data) => {
   };
 
   for(let i = 0; i < data.length; i++) {
-    if(currBatch.RequestItems[DYNAMODB_TABLE_NAME].length === 25) {
-        batches.push(currBatch);
-        currBatch = {
-            RequestItems: {
-                [DYNAMODB_TABLE_NAME]: []
-            }
-        }
-    }
-
-    const now = moment().valueOf();
-      console.log('[INFO] Now: ', now);
-    currBatch.RequestItems[DYNAMODB_TABLE_NAME].push({
-        PutRequest: {
-            Item: {
-                pid: 'RIDE',
-                sid: `v_${i}_${now}`,
-                ...data[i],
-            }
-        }
-    });
+      if (currBatch.RequestItems[DYNAMODB_TABLE_NAME].length === 25) {
+          batches.push(currBatch);
+          currBatch = {
+              RequestItems: {
+                  [DYNAMODB_TABLE_NAME]: []
+              }
+          }
+      }
+      currBatch.RequestItems[DYNAMODB_TABLE_NAME].push({
+          PutRequest: {
+              Item: {
+                  pid: `RIDE-${data[i].id}`,
+                  sid: moment().valueOf(),
+                  ...data[i],
+              }
+          }
+      });
   }
 
   if(currBatch.RequestItems[DYNAMODB_TABLE_NAME].length !== 0) batches.push(currBatch);
@@ -125,8 +132,12 @@ const createBatches = (data) => {
 };
 
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
+    console.log('[INFO] Attempting to insert latest ride data into DynamoDB: ', event);
     const token = await getAccessToken();
+
+    console.log('[INFO] Successfully Retrieved OAuth access_token: ', token);
+
     const data = await getWaitTimes(token);
     console.log("[INFO] Retrieved Rides: ", data);
 
