@@ -9,7 +9,8 @@ import {
     Icon,
     Container,
     Menu,
-    Label
+    Label,
+    Header
 } from 'semantic-ui-react';
 import ScrollView from "./components/ScrollView/ScrollView";
 import times from 'lodash/times';
@@ -58,7 +59,7 @@ class App extends Component {
                     }
                 </ScrollView>
                 <Container>
-                    <h3>What can we help you find?</h3>
+                    <Header>What can we help you find?</Header>
                     <ScrollView>
                         {
                             times(20, () => {
