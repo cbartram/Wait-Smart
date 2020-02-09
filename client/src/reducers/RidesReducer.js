@@ -18,7 +18,7 @@ export default (state = { isFetching: true }, action) => {
             return {
               ...state,
               isFetching: false,
-              rides: action.payload,
+              rides: [...action.payload.rides],
             };
         case constants.FETCH_RIDES_FAILURE:
             return {

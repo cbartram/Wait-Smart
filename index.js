@@ -41,7 +41,7 @@ app.get('/rides', async (req, res) => {
     try {
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
-        res.json(poi.Rides);
+        res.json({ statusCode: 200, rides: poi.Rides });
     } catch(err) {
         console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
         res.status(500).json({ message: 'Failed to retrieve ride data from Universal API', error: err });
