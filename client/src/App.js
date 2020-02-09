@@ -30,6 +30,12 @@ class App extends Component {
             ]
         }
     }
+
+    componentDidMount() {
+
+    }
+
+
     render() {
         return (
             <div>
@@ -59,7 +65,7 @@ class App extends Component {
                     }
                 </ScrollView>
                 <Container>
-                    <Header>What can we help you find?</Header>
+                    <Header style={{ marginTop: 10, marginBottom: 10 }}>What can we help you find?</Header>
                     <ScrollView>
                         {
                             times(20, () => {
