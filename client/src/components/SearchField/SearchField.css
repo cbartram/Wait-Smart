@@ -1,0 +1,22 @@
+
+.search-field {
+    background-color: rgb(255, 255, 255) !important;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 2px 4px !important;
+    height: 48px !important;
+    transition: box-shadow 200ms ease-in 0s !important;
+    border-width: 1px !important;
+    border-style: solid !important;
+    border-color: rgb(235, 235, 235) !important;
+    border-image: initial !important;
+    border-radius: 4px !important;
+}
+
+.ui.input > input {
+    border-radius: 0;
+    border: 0;
+    padding-top: 15px;
+}
+
+.ui.icon.input > i.icon {
+    top: 4px;
+}
