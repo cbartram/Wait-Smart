@@ -37,7 +37,7 @@
     "aws-sdk": "^2.612.0",
     "bluebird": "^3.7.2",
     "dotenv": "^8.2.0",
-    "lambda-api-router": "^1.0.2",
+    "lambda-api-router": "^1.0.4",
     "moment": "^2.24.0",
     "redis": "^2.8.0",
     "request": "^2.88.0",

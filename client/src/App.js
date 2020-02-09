@@ -6,7 +6,7 @@ import {
     Container,
     Menu,
     Label,
-    Header
+    Header, Loader
 } from 'semantic-ui-react';
 import times from 'lodash/times';
 import { connect } from 'react-redux';
@@ -44,6 +44,8 @@ class App extends Component {
     }
 
     render() {
+        if(this.props.isFetching) return <Loader active />;
+
         return (
             <div>
                 <Menu>
@@ -89,7 +91,7 @@ class App extends Component {
                                             </Card.Description>
                                         </Card.Content>
                                         <Card.Content extra>
-                                            <a>
+                                            <a href="#friends">
                                                 <Icon name='user'/>
                                                 22 Friends
                                             </a>

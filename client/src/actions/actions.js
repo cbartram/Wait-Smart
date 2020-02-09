@@ -2,7 +2,7 @@
  * This file defines actions which trigger switch statements in the reducer
  */
 import * as constants from '../constants';
-import { get, post } from '../util';
+import { get } from '../util';
 
 /**
  * Retrieves a single ride's meta-data from the API

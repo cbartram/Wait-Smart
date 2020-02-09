@@ -15,6 +15,8 @@ AWS.config.update({
 const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
 const app = new Api();
 
+app.cors();
+
 /**
  * Finds all points of interest for the Universal API including: nighlife, restrooms,
  * rides, restaurants etc...
