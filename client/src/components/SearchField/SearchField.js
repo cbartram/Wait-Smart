@@ -12,7 +12,6 @@ const SearchField = (props) => (
         })}
         placeholder="Search for Anything"
         results={[]}
-        {...props}
     />
 );
 

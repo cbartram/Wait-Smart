@@ -15,17 +15,42 @@ AWS.config.update({
 const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
 const app = new Api();
 
+/**
+ * Finds all points of interest for the Universal API including: nighlife, restrooms,
+ * rides, restaurants etc...
+ */
 app.get('/', async (req, res) => {
     try {
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
         res.json(poi);
     } catch(err) {
-        console.log('[ERROR] Failed to retrieve data from Universal API: ', err);
-        res.status(500).json({ message: 'Failed to retrieve data from Universal API', error: err });
+        console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
+        res.status(500).json({ message: 'Failed to retrieve point of interest data from Universal API', error: err });
     }
 });
 
+/**
+ * Finds all rides from the Universal, IOA, and Volcano bay theme parks. This includes
+ * the latest ride time for each ride. (Its not cached and will be pulled from the Universal API each time)
+ */
+app.get('/rides', async (req, res) => {
+    console.log('[INFO] Finding data for all rides...');
+    try {
+        const access_token = await getUniversalAccessToken();
+        const poi = await getPointsOfInterest(access_token);
+        res.json(poi.Rides);
+    } catch(err) {
+        console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
+        res.status(500).json({ message: 'Failed to retrieve ride data from Universal API', error: err });
+    }
+});
+
+/**
+ * Finds meta-data about a specific ride given the unique ride Id
+ * The meta-data is pulled from the cache so tha latest ride wait time is no always accurate.
+ * The last 10 minutes of ride wait times are also pulled from the database.
+ */
 app.get('/rides/:id', async (req, res) => {
     // TODO check ride id against regex for a number
     console.log(`[INFO] Finding data for ride: ${req.params.id}`);

@@ -12,3 +12,11 @@ import { get, post } from '../util';
 export const getRide = (payload) => async (dispatch, getState) => {
     await get(constants.GET_RIDE + payload, constants.FETCH_RIDES_REQUEST, constants.FETCH_RIDES_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState);
 };
+
+/**
+ * Retrieves all ride meta-data from the API
+ * @returns {function(...[*]=)}
+ */
+export const getRides = () => async (dispatch, getState) => {
+    await get(constants.GET_ALL_RIDES, constants.FETCH_RIDES_REQUEST, constants.FETCH_RIDES_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState, true);
+};

@@ -4,6 +4,7 @@
  * @author cbartram
  */
 import React from 'react';
+import isNil from 'lodash/isNil';
 import { getRequestUrl } from "./constants";
 
 /**
@@ -120,7 +121,7 @@ export const get = async (path, requestType, successType, failureType, dispatch,
     doDispatch &&
     dispatch({
         type: requestType,
-        payload: body // Sets isFetching to true (useful for unit testing redux)
+        payload: {}
     });
 
     try {
@@ -131,7 +132,6 @@ export const get = async (path, requestType, successType, failureType, dispatch,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
             },
-            body: JSON.stringify(body),
         };
 
         const response = await (await fetch(getRequestUrl(path), params)).json();

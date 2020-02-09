@@ -1,8 +1,4 @@
 import React, { Component } from 'react';
-import Navbar from './components/Navbar/Navbar';
-import Logo from './resources/images/logo.png';
-import './App.css';
-import SearchField from "./components/SearchField/SearchField";
 import {
     Card,
     Image,
@@ -12,8 +8,20 @@ import {
     Label,
     Header
 } from 'semantic-ui-react';
-import ScrollView from "./components/ScrollView/ScrollView";
 import times from 'lodash/times';
+import { connect } from 'react-redux';
+import ScrollView from "./components/ScrollView/ScrollView";
+import Navbar from './components/Navbar/Navbar';
+import Logo from './resources/images/logo.png';
+import './App.css';
+import SearchField from "./components/SearchField/SearchField";
+import { getRides } from "./actions/actions";
+
+
+const mapStateToProps = (state) => ({ rides: state.rides });
+const mapDispatchToProps = (dispatch) => ({
+    getRides: () => dispatch(getRides())
+});
 
 class App extends Component {
     constructor(props) {
@@ -32,9 +40,8 @@ class App extends Component {
     }
 
     componentDidMount() {
-
+        this.props.getRides()
     }
-
 
     render() {
         return (
@@ -45,7 +52,6 @@ class App extends Component {
                     </Menu.Item>
                     <Menu.Item>
                         <SearchField
-                            isLoading={false}
                             handleResultSelect={() => {
                             }}
                             handleSearchChange={() => {
@@ -57,7 +63,7 @@ class App extends Component {
                     {
                         this.state.rideCategories.map(({ formatted }) => {
                           return (
-                              <Label>
+                              <Label key={formatted}>
                                   { formatted }
                               </Label>
                           )
@@ -68,9 +74,9 @@ class App extends Component {
                     <Header style={{ marginTop: 10, marginBottom: 10 }}>What can we help you find?</Header>
                     <ScrollView>
                         {
-                            times(20, () => {
+                            times(20, (i) => {
                                 return (
-                                    <Card>
+                                    <Card key={i}>
                                         <Image src='https://react.semantic-ui.com/images/avatar/large/matthew.png'
                                                wrapped ui={false}/>
                                         <Card.Content>
@@ -100,4 +106,4 @@ class App extends Component {
     }
 }
 
-export default App;
+export default connect(mapStateToProps, mapDispatchToProps)(App);

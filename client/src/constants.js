@@ -33,7 +33,8 @@ export const getRequestUrl = (endpointURI) => {
 
 
 // API Routes
-export const GET_RIDE = '/rides/';
+export const GET_ALL_RIDES = '/rides';
+export const GET_RIDE = '/rides/'; // Requires ride id
 
 
 // Redux constants
