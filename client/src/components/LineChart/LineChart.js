@@ -1,0 +1,37 @@
+import React, { Component } from 'react'
+import Chart from "chart.js";
+
+export default class LineChart extends Component {
+  chartRef = React.createRef();
+
+  componentDidMount() {
+    new Chart(this.chartRef.current.getContext("2d"), {
+      type: "line",
+
+      data: {
+        //Bring in data
+        labels: ["Jan", "Feb", "March"],
+        datasets: [
+          {
+            label: "Sales",
+            data: [86, 67, 91],
+          }
+        ]
+      },
+      options: {
+          responsive: true,
+          maintainAspectRatio: false,
+      }
+    });
+  }
+  render() {
+    return (
+        <div className={this.props.className}>
+          <canvas
+              id="myChart"
+              ref={this.chartRef}
+          />
+        </div>
+    )
+  }
+}

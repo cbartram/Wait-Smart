@@ -36,6 +36,7 @@
   "dependencies": {
     "aws-sdk": "^2.612.0",
     "bluebird": "^3.7.2",
+    "chart.js": "^2.9.3",
     "dotenv": "^8.2.0",
     "lambda-api-router": "^1.0.4",
     "moment": "^2.24.0",

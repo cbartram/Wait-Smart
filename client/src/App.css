@@ -6,6 +6,10 @@
     margin-right: 5px;
 }
 
+.ui.menu {
+    border-radius: 0;
+}
+
 .ui.menu .item:before {
     width: 0;
     background: white;
@@ -17,4 +21,49 @@
     min-width: 100px;
     text-align: center;
     margin-left: 6px
+}
+
+.ui .card {
+    box-shadow: rgba(0, 0, 0, 0.15) 0 2px 8px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    white-space: normal;
+    width: 130px !important;
+    min-width: 130px; /* Important this is what actually sets the width */
+    border-width: 1px;
+    border-style: solid;
+    border-color: rgba(0, 0, 0, 0.02);
+    border-image: initial;
+    border-radius: 12px;
+}
+
+.ui.card > .content > .header {
+    overflow-wrap: break-word;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    line-height: 1.28571em !important;
+    color: rgb(72, 72, 72);
+    text-overflow: ellipsis;
+    max-height: 2.57143em;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    margin: 0px;
+    overflow: hidden;
+}
+
+.my-1 {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+}
+
+.body-text {
+    font-size: 14px !important;
+    line-height: 20px !important;
+    margin-top: 4px !important;
+    color: rgb(34, 34, 34) !important;
+    font-family: Circular, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", sans-serif !important;
+    font-weight: 400 !important;
 }
