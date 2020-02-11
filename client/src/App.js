@@ -15,10 +15,7 @@ import Logo from './resources/images/logo.png';
 import './App.css';
 import SearchField from "./components/SearchField/SearchField";
 import { getRides } from "./actions/actions";
-import Chart from 'chart.js';
 import LineChart from "./components/LineChart/LineChart";
-
-
 
 const mapStateToProps = (state) => ({
     rides: state.rides.rides,
@@ -94,7 +91,7 @@ class App extends Component {
                         }
                     </ScrollView>
                     <Header className="my-1">Average Park Wait Time</Header>
-                    <h5 className="body-text">Explore the average wait time across Universal parks</h5>
+                    <h5 className="body-text">Explore the live average wait time(s) across Universal parks</h5>
                     <LineChart />
                     <Navbar/>
                 </Container>

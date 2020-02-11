@@ -21,6 +21,22 @@ export default class LineChart extends Component {
       options: {
           responsive: true,
           maintainAspectRatio: false,
+          scales: {
+            xAxes: [{
+              // ticks: { display: false },
+              gridLines: {
+                display: false,
+                // drawBorder: false
+              }
+            }],
+            yAxes: [{
+              // ticks: { display: false },
+              gridLines: {
+                display: false,
+                // drawBorder: false
+              }
+            }]
+          }
       }
     });
   }

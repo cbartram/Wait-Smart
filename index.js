@@ -2,6 +2,7 @@ require('dotenv').config();
 const moment = require('moment');
 const Api = require('lambda-api-router');
 const AWS = require('aws-sdk');
+const _ = require('lodash');
 const {
     getUniversalAccessToken,
     getPointsOfInterest
@@ -30,6 +31,20 @@ app.get('/', async (req, res) => {
         console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
         res.status(500).json({ message: 'Failed to retrieve point of interest data from Universal API', error: err });
     }
+});
+
+/**
+ * Finds all rides for a specific park and aggregates the real
+ * time average of the wait times for the park as a whole.
+ */
+app.get('/rides/park/:parkId', async (req, res) => {
+    // TODO Validate park id
+    console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
+    const access_token = await getUniversalAccessToken();
+    const { Rides } = await getPointsOfInterest(access_token);
+    const parkRides = _.groupBy(Rides, 'VenueId')[req.params.parkId];
+    const average = Math.floor(parkRides.reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides.length);
+    res.json({ park: parkRides, averageWaitTime: average < 0 ? 0 : average, statusCode: 200 });
 });
 
 /**
