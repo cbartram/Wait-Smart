@@ -67,8 +67,7 @@ const getWaitTimes = async (token) => {
         },
     };
     try {
-        const data = JSON.parse(await request(ridesOptions));
-        return data.Rides.map(ride => ({ id: ride.Id, wait: ride.WaitTime }))
+        return JSON.parse(await request(ridesOptions));
     } catch(err) {
         console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
         return null;
@@ -173,46 +172,27 @@ const batchWriteAndRetry = async (batches) => {
 };
 
 
-exports.handler = async (event) => {
-    console.log('[INFO] Attempting to insert latest ride data into DynamoDB: ', event);
+exports.handler = async () => {
     const token = await getAccessToken();
 
-    console.log('[INFO] Successfully Retrieved OAuth access_token: ', token);
-
     const data = await getWaitTimes(token);
-    console.log("[INFO] Retrieved Rides: ", data);
-
-    const batches = createBatches(data);
+    const rides = data.Rides.map(ride => ({ id: ride.Id, wait: ride.WaitTime }));
+    const batches = createBatches(rides);
     const numFailed = batchWriteAndRetry(batches);
 
     const parkRides = _.groupBy(data.Rides, 'VenueId');
     const parkIds = Object.keys(parkRides);
-    const averages = {};
-    console.log('[INFO] Park Ids: ', parkIds);
 
     // Compute averages for each park
-    parkIds.forEach(id => {
-       averages[id] = Math.floor(parkRides[id].reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides.length);
-    });
-
-    console.log('[INFO] Averages: ', averages);
-
-    const promises = [];
-    for (const key of Object.keys(averages)) {
-        console.log('[INFO] Pushing park promise: ', key);
-        promises.push(putItem({
-            pid: `PARK-${key}`,
+    await Promise.all(parkIds.map(id => ({
+            pid: `PARK-${id}`,
             sid: moment().valueOf(),
-            wait: averages[key],
-        }));
-    }
+            wait: Math.floor(parkRides[id].reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides[id].length),
+           })));
 
-    await Promise.all(promises);
-
-    console.log(`[INFO] ${data.length - numFailed} / ${data.length} items were written successfully!`);
     return {
-        total: data.length,
-        successful: data.length - numFailed,
+        total: rides.length,
+        successful: rides.length - numFailed,
         failed: numFailed
     }
 };
