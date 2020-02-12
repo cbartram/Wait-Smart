@@ -2,6 +2,7 @@ const moment = require('moment');
 const crypto = require('crypto');
 const request = require('request-promise-native');
 const AWS = require('aws-sdk');
+const _ = require('lodash');
 const URL = 'https://services.universalorlando.com/api';
 const {
     CLIENT_ID,
@@ -131,30 +132,19 @@ const createBatches = (data) => {
   return batches;
 };
 
-
-exports.handler = async (event) => {
-    console.log('[INFO] Attempting to insert latest ride data into DynamoDB: ', event);
-    const token = await getAccessToken();
-
-    console.log('[INFO] Successfully Retrieved OAuth access_token: ', token);
-
-    const data = await getWaitTimes(token);
-    console.log("[INFO] Retrieved Rides: ", data);
-
+const batchWriteAndRetry = async (batches) => {
     const promises = [];
-    const batches = createBatches(data);
     let numFailed = 0;
     const unprocessedItems = [];
 
     console.log(`[INFO] Queued up ${batches.length} batches to write.`);
     for(let i = 0; i < batches.length; i++) {
         try {
-            // TODO maybe should push to promises array to await all
             const { UnprocessedItems } = await ddb.batchWrite(batches[i]).promise();
             if(typeof UnprocessedItems[DYNAMODB_TABLE_NAME] !== 'undefined') {
                 console.log(`[INFO] Batch write ${i} has some unprocessed items: ${JSON.stringify(UnprocessedItems)}`);
                 UnprocessedItems[DYNAMODB_TABLE_NAME].forEach((request) => {
-                   unprocessedItems.push(request.PutRequest.Item);
+                    unprocessedItems.push(request.PutRequest.Item);
                 });
             } else {
                 console.log(`[INFO] Finished batch write #${i} successfully.`);
@@ -169,7 +159,7 @@ exports.handler = async (event) => {
         for(let i = 0; i < unprocessedItems.length; i++) {
             try {
                 console.log(`[INFO] Individually writing item into DynamoDB: ${JSON.stringify(unprocessedItems[i])}`);
-                promises.push(putItem(unprocessedItems[i]))// TODO put request goes here
+                promises.push(putItem(unprocessedItems[i]));
             } catch(err) {
                 numFailed++;
                 console.log(`[ERROR] Unable to individually write item into DynamoDB: ${JSON.stringify(unprocessedItems[i])}. Error: `, err);
@@ -178,6 +168,46 @@ exports.handler = async (event) => {
         console.log('[INFO] Awaiting promises....');
         await Promise.all(promises);
     }
+
+    return numFailed;
+};
+
+
+exports.handler = async (event) => {
+    console.log('[INFO] Attempting to insert latest ride data into DynamoDB: ', event);
+    const token = await getAccessToken();
+
+    console.log('[INFO] Successfully Retrieved OAuth access_token: ', token);
+
+    const data = await getWaitTimes(token);
+    console.log("[INFO] Retrieved Rides: ", data);
+
+    const batches = createBatches(data);
+    const numFailed = batchWriteAndRetry(batches);
+
+    const parkRides = _.groupBy(data.Rides, 'VenueId');
+    const parkIds = Object.keys(parkRides);
+    const averages = {};
+    console.log('[INFO] Park Ids: ', parkIds);
+
+    // Compute averages for each park
+    parkIds.forEach(id => {
+       averages[id] = Math.floor(parkRides[id].reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides.length);
+    });
+
+    console.log('[INFO] Averages: ', averages);
+
+    const promises = [];
+    for (const key of Object.keys(averages)) {
+        console.log('[INFO] Pushing park promise: ', key);
+        promises.push(putItem({
+            pid: `PARK-${key}`,
+            sid: moment().valueOf(),
+            wait: averages[key],
+        }));
+    }
+
+    await Promise.all(promises);
 
     console.log(`[INFO] ${data.length - numFailed} / ${data.length} items were written successfully!`);
     return {
