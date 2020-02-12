@@ -183,12 +183,18 @@ exports.handler = async () => {
     const parkRides = _.groupBy(data.Rides, 'VenueId');
     const parkIds = Object.keys(parkRides);
 
-    // Compute averages for each park
-    await Promise.all(parkIds.map(id => ({
+    // Compute averages for each park and returns a promise for each
+    // item to insert into the database.
+    const items = parkIds.map(id => {
+        const item = {
             pid: `PARK-${id}`,
             sid: moment().valueOf(),
             wait: Math.floor(parkRides[id].reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides[id].length),
-           })));
+        };
+        return putItem(item);
+    });
+
+    await Promise.all(items);
 
     return {
         total: rides.length,

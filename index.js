@@ -40,11 +40,19 @@ app.get('/', async (req, res) => {
 app.get('/rides/park/:parkId', async (req, res) => {
     // TODO Validate park id
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
-    const access_token = await getUniversalAccessToken();
-    const { Rides } = await getPointsOfInterest(access_token);
-    const parkRides = _.groupBy(Rides, 'VenueId')[req.params.parkId];
-    const average = Math.floor(parkRides.reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides.length);
-    res.json({ park: parkRides, averageWaitTime: average < 0 ? 0 : average, statusCode: 200 });
+    const { Items } = await ddb.query({
+        TableName: DYNAMODB_TABLE_NAME,
+        KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
+        ExpressionAttributeValues: {
+            ':pid': `PARK-${req.params.id}`,
+            ':before': moment().startOf('day').valueOf(),
+            ':now': moment().valueOf()
+        }
+    }).promise();
+
+    console.log('[INFO] Found Items: ', Items);
+
+    res.json({ park: Items, statusCode: 200 });
 });
 
 /**
