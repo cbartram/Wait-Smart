@@ -27,5 +27,30 @@ export const getRides = () => async (dispatch, getState) => {
  * @returns {function(...[*]=)}
  */
 export const getPark = (id) => async (dispatch, getState) => {
-    await get(constants.GET_PARK_WAIT_TIME + id, constants.FETCH_PARK_REQUEST, constants.FETCH_PARK_SUCCESS, constants.FETCH_PARK_FAILURE, dispatch, getState, true);
+    await get(constants.GET_PARK_WAIT_TIME + id, constants.FETCH_PARK_REQUEST, constants.FETCH_PARK_SUCCESS, constants.FETCH_PARK_FAILURE, dispatch, getState);
+};
+
+/**
+ * Applies a new ride filter to the redux state so that only a
+ * certain subset of rides are found
+ * @param filterName String the name of the filter to apply: Water, Kidfriendly video 3d 4d
+ * @returns {{payload: *, type: string}}
+ */
+export const applyRideFilter = (filterName) => {
+  return {
+      type: constants.APPLY_RIDE_FILTER,
+      payload: filterName,
+  }
+};
+
+/**
+ * Removes a ride filter from redux so that more rides are shown
+ * @param filterName
+ * @returns {{payload: *, type: string}}
+ */
+export const removeRideFilter = (filterName) => {
+  return {
+      type: constants.REMOVE_RIDE_FILTER,
+      payload: filterName
+  }
 };

@@ -27,7 +27,6 @@ export const getRequestUrl = (endpointURI) => {
         url = `${PROD_URL}${endpointURI}`;
     else
         url = `${DEV_URL}${endpointURI}`;
-
     return url;
 };
 
@@ -44,3 +43,5 @@ export const FETCH_RIDES_FAILURE = 'FETCH_RIDES_FAILURE';
 export const FETCH_PARK_REQUEST = 'FETCH_PARK_REQUEST';
 export const FETCH_PARK_SUCCESS = 'FETCH_PARK_SUCCESS';
 export const FETCH_PARK_FAILURE = 'FETCH_PARK_FAILURE';
+export const APPLY_RIDE_FILTER = 'APPLY_RIDE_FILTER';
+export const REMOVE_RIDE_FILTER = 'REMOVE_RIDE_FILTER';

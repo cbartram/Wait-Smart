@@ -55,7 +55,7 @@ app.get('/rides/park/:parkId', async (req, res) => {
 
     console.log('[INFO] Found Items: ', Items);
 
-    res.json({ park: Items, statusCode: 200 });
+    res.json({ park: Items, id: req.params.parkId, statusCode: 200 });
 });
 
 /**

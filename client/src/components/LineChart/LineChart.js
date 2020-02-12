@@ -1,46 +1,46 @@
 import React, { Component } from 'react'
 import Chart from "chart.js";
-import withPlaceholder from "../../withPlaceholder";
+import moment from 'moment';
 
 class LineChart extends Component {
   chartRef = React.createRef();
-
   componentDidMount() {
+    const data = this.props.data.map(({ wait }) => wait);
+    const labels = this.props.data.map(({ sid }) => moment(sid).format('hh:mm A'));
+
     new Chart(this.chartRef.current.getContext("2d"), {
       type: "line",
-
       data: {
-        //Bring in data
-        labels: ["Jan", "Feb", "March"],
-        datasets: [
-          {
-            label: "Sales",
-            data: [86, 67, 91],
+        labels,
+        datasets: [{
+            label: "Average Wait Time (minutes)",
+            backgroundColor: '#FF5A60',
+            pointBackgroundColor: '#FF5A60',
+            data,
           }
         ]
       },
       options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
           scales: {
             xAxes: [{
-              // ticks: { display: false },
               gridLines: {
-                display: false,
-                // drawBorder: false
+                display: true,
               }
             }],
             yAxes: [{
-              // ticks: { display: false },
+              stacked: true,
               gridLines: {
-                display: false,
-                // drawBorder: false
+                display: true,
               }
             }]
           }
       }
     });
   }
+
+
   render() {
     return (
         <div className={this.props.className}>

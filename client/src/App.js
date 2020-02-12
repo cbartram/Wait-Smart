@@ -5,7 +5,7 @@ import {
     Container,
     Menu,
     Label,
-    Header,
+    Header, Loader,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 import ScrollView from "./components/ScrollView/ScrollView";
@@ -13,19 +13,20 @@ import Navbar from './components/Navbar/Navbar';
 import Logo from './resources/images/logo.png';
 import './App.css';
 import SearchField from "./components/SearchField/SearchField";
-import {getPark, getRides} from "./actions/actions";
+import {applyRideFilter, getPark, getRides, removeRideFilter } from "./actions/actions";
 import LineChart from "./components/LineChart/LineChart";
-import withPlaceholder from './withPlaceholder';
 
 const mapStateToProps = (state) => ({
-    rides: state.rides.rides,
+    rides: state.rides.filteredRides,
     isFetching: state.rides.isFetching,
     isFetchingParks: state.parks.isFetching,
     parks: state.parks
 });
 const mapDispatchToProps = (dispatch) => ({
     getRides: () => dispatch(getRides()),
-    getPark: (id) => dispatch(getPark(id))
+    getPark: (id) => dispatch(getPark(id)),
+    applyRideFilter: (filter) => dispatch(applyRideFilter(filter)),
+    removeRideFilter: (filter) => dispatch(removeRideFilter(filter))
 });
 
 class App extends Component {
@@ -33,24 +34,41 @@ class App extends Component {
         super(props);
 
         this.state = {
-            rideCategories: [
-                { formatted: 'Kid Friendly', name: 'KidFriendly' },
-                { formatted: 'Video 3D', name: 'Video3D4D' },
-                { formatted: 'Thrill', name: 'Thrill' },
-                { formatted: 'Water', name: 'Water' },
-                { formatted: 'Water Family', name: 'WaterFamily' },
-                { formatted: 'Water Thrill', name: 'WaterThrill' },
-            ]
+            rideCategories: {
+                KidFriendly: { name: 'Kid Friendly', active: false },
+                Video3D4D: { name: 'Video 3D', active: false },
+                Thrill: { name: 'Thrill', active: false },
+                Water: { name: 'Water', active: false },
+                WaterFamily: { name: 'Water Family', active: false },
+                WaterThrill: { name: 'Water Thrill', active: false },
+            },
+            initialPark: 10010 // The park that is loaded into the graph when page loads
         }
 
     }
 
     componentDidMount() {
-        // this.props.getRides();
-        this.props.getPark(10010)
+        this.props.getRides();
+        this.props.getPark(this.state.initialPark)
+    }
+
+    toggleRideFilter(name, toggle) {
+        toggle ?
+        this.props.applyRideFilter(name) :
+        this.props.removeRideFilter(name);
+        this.setState(prev => ({
+            rideCategories: {
+                ...prev.rideCategories,
+                [name]: {
+                    ...prev.rideCategories[name],
+                    active: !prev.rideCategories[name].active,
+                }
+            }
+        }));
     }
 
     render() {
+        if(this.props.isFetchingParks) return <Loader active />;
         return (
             <div>
                 <Menu>
@@ -59,19 +77,17 @@ class App extends Component {
                     </Menu.Item>
                     <Menu.Item>
                         <SearchField
-                            handleResultSelect={() => {
-                            }}
-                            handleSearchChange={() => {
-                            }}
+                            handleResultSelect={() => {}}
+                            handleSearchChange={() => {}}
                         />
                     </Menu.Item>
                 </Menu>
                 <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>
                     {
-                        this.state.rideCategories.map(({ formatted }) => {
+                        Object.keys(this.state.rideCategories).map(key => {
                           return (
-                              <Label key={formatted}>
-                                  { formatted }
+                              <Label className={this.state.rideCategories[key].active ? 'label-active': ''} key={key} onClick={() => this.toggleRideFilter(key, !this.state.rideCategories[key].active)}>
+                                  { this.state.rideCategories[key].name }
                               </Label>
                           )
                         })
@@ -96,7 +112,7 @@ class App extends Component {
                     <Header className="my-1">Average Park Wait Time</Header>
                     <h5 className="body-text">Explore the live average wait time(s) across Universal parks</h5>
 
-                    <LineChart />
+                    <LineChart data={this.props.parks[this.state.initialPark]} />
                     <Navbar/>
                 </Container>
             </div>

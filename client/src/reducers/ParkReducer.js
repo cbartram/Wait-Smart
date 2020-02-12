@@ -6,7 +6,7 @@ import * as constants from '../constants';
  * @param action Object action being dispatched (includes action.payload which is the data)
  * @returns {{result: *}}
  */
-export default (state = { isFetching: true, parks: {} }, action) => {
+export default (state = { isFetching: true }, action) => {
     switch (action.type) {
         case constants.FETCH_PARK_REQUEST:
             return {
@@ -18,10 +18,7 @@ export default (state = { isFetching: true, parks: {} }, action) => {
             return {
                 ...state,
                 isFetching: false,
-                parks: {
-                    ...state.parks,
-                    ...action.payload,
-                }
+                [action.payload.id]: action.payload.park,
             };
         case constants.FETCH_PARK_FAILURE:
             return {
