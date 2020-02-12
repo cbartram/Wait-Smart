@@ -6,26 +6,29 @@ import * as constants from '../constants';
  * @param action Object action being dispatched (includes action.payload which is the data)
  * @returns {{result: *}}
  */
-export default (state = { isFetching: true, rides: [] }, action) => {
+export default (state = { isFetching: true, parks: {} }, action) => {
     switch (action.type) {
-        case constants.FETCH_RIDES_REQUEST:
+        case constants.FETCH_PARK_REQUEST:
             return {
                 ...state,
                 isFetching: true,
-                rides: []
+                parks: {}
             };
-        case constants.FETCH_RIDES_SUCCESS:
+        case constants.FETCH_PARK_SUCCESS:
             return {
-              ...state,
-              isFetching: false,
-              rides: [...action.payload.rides],
+                ...state,
+                isFetching: false,
+                parks: {
+                    ...state.parks,
+                    ...action.payload,
+                }
             };
-        case constants.FETCH_RIDES_FAILURE:
+        case constants.FETCH_PARK_FAILURE:
             return {
-               ...state,
-               isFetching: false,
-               rides: [],
-               error: action.payload
+                ...state,
+                isFetching: false,
+                parks: { ...state.parks },
+                error: action.payload
             };
         default:
             return state;

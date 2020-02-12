@@ -40,11 +40,14 @@ app.get('/', async (req, res) => {
 app.get('/rides/park/:parkId', async (req, res) => {
     // TODO Validate park id
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
+    // console.log('[INFO] Before: ', moment().startOf('day').valueOf());
+    // console.log('[INFO] Now: ', moment().valueOf());
+    // TODO add pagination here
     const { Items } = await ddb.query({
         TableName: DYNAMODB_TABLE_NAME,
         KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
         ExpressionAttributeValues: {
-            ':pid': `PARK-${req.params.id}`,
+            ':pid': `PARK-${req.params.parkId}`,
             ':before': moment().startOf('day').valueOf(),
             ':now': moment().valueOf()
         }

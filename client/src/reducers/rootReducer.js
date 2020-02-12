@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import ridesReducer from './RidesReducer';
+import parkReducer from './ParkReducer';
 
 
 /**
@@ -8,5 +9,6 @@ import ridesReducer from './RidesReducer';
  * application.
  */
 export default combineReducers({
-    rides: ridesReducer
+    rides: ridesReducer,
+    parks: parkReducer,
 });

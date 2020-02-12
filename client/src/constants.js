@@ -35,9 +35,12 @@ export const getRequestUrl = (endpointURI) => {
 // API Routes
 export const GET_ALL_RIDES = '/rides';
 export const GET_RIDE = '/rides/'; // Requires ride id
-
+export const GET_PARK_WAIT_TIME = '/rides/park/'; // Requires park id
 
 // Redux constants
 export const FETCH_RIDES_REQUEST = 'FETCH_RIDES_REQUEST';
 export const FETCH_RIDES_SUCCESS = 'FETCH_RIDES_SUCCESS';
 export const FETCH_RIDES_FAILURE = 'FETCH_RIDES_FAILURE';
+export const FETCH_PARK_REQUEST = 'FETCH_PARK_REQUEST';
+export const FETCH_PARK_SUCCESS = 'FETCH_PARK_SUCCESS';
+export const FETCH_PARK_FAILURE = 'FETCH_PARK_FAILURE';

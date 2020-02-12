@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import Chart from "chart.js";
+import withPlaceholder from "../../withPlaceholder";
 
-export default class LineChart extends Component {
+class LineChart extends Component {
   chartRef = React.createRef();
 
   componentDidMount() {
@@ -51,3 +52,5 @@ export default class LineChart extends Component {
     )
   }
 }
+
+export default LineChart;
