@@ -40,8 +40,6 @@ app.get('/', async (req, res) => {
 app.get('/rides/park/:parkId', async (req, res) => {
     // TODO Validate park id
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
-    // console.log('[INFO] Before: ', moment().startOf('day').valueOf());
-    // console.log('[INFO] Now: ', moment().valueOf());
     // TODO add pagination here
     const { Items } = await ddb.query({
         TableName: DYNAMODB_TABLE_NAME,
@@ -52,9 +50,6 @@ app.get('/rides/park/:parkId', async (req, res) => {
             ':now': moment().valueOf()
         }
     }).promise();
-
-    console.log('[INFO] Found Items: ', Items);
-
     res.json({ park: Items, id: req.params.parkId, statusCode: 200 });
 });
 

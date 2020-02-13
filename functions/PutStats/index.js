@@ -173,6 +173,17 @@ const batchWriteAndRetry = async (batches) => {
 
 
 exports.handler = async () => {
+
+    if(!moment().isBetween(moment().hour(7), moment().hour(21))) {
+        console.log(`[INFO] The current time: ${moment().format('hh:mm A')} is not between ${moment().hour(7).format('hh:mm A')} and ${moment().hour(21).format('hh:mm A')}`);
+        return {
+            total: 0,
+            numAttempted: 0,
+            successful: 0,
+            failed: 0
+        }
+    }
+
     const token = await getAccessToken();
 
     const data = await getWaitTimes(token);
@@ -191,6 +202,8 @@ exports.handler = async () => {
             sid: moment().valueOf(),
             wait: Math.floor(parkRides[id].reduce((prev, curr) => prev + curr.WaitTime, 0) / parkRides[id].length),
         };
+
+        if(item.wait < 0) item.wait = 0;
         return putItem(item);
     });
 

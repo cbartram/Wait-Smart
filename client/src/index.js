@@ -6,7 +6,7 @@ import * as constants from './constants'
 import {applyMiddleware, compose, createStore} from 'redux';
 import thunk from 'redux-thunk';
 import './index.css';
-import App from './App';
+import Router from './components/Router/Router';
 import * as serviceWorker from './serviceWorker';
 
 // Setup Redux middleware and store
@@ -15,6 +15,6 @@ const store = createStore(rootReducer, constants.INITIAL_STATE, composeEnhancers
     applyMiddleware(thunk)
 ));
 
-ReactDOM.render(<Provider store={store}><App /></Provider>, document.getElementById('root'));
+ReactDOM.render(<Provider store={store}><Router /></Provider>, document.getElementById('root'));
 
 serviceWorker.unregister();
