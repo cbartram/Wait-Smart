@@ -28,17 +28,31 @@ export default (state = { isFetching: true, rides: [], filteredRides: [], applie
                error: action.payload
             };
         case constants.APPLY_RIDE_FILTER:
+            const newAppliedFilters = [...state.appliedFilters];
+            if(!newAppliedFilters.includes(action.payload)) newAppliedFilters.push(action.payload);
             return {
                 ...state,
+                appliedFilters: [...newAppliedFilters],
                 filteredRides: [...state.filteredRides.filter(({ RideTypes }) => {
-                    if(RideTypes === null) return true; // TODO make false the null ride shouldnt be included in the category
+                    if(RideTypes === null) return false;
                     return RideTypes.includes(action.payload)
                 })]
             };
         case constants.REMOVE_RIDE_FILTER:
+            const remainingFilters = state.appliedFilters.filter(filter => filter !== action.payload);
+            let filteredRides = state.rides;
+
+            remainingFilters.forEach(filter => {
+               filteredRides = filteredRides.filter(({ RideTypes }) => {
+                   if(RideTypes === null) return false;
+                   return RideTypes.includes(filter);
+               });
+            });
             return {
               ...state,
-
+               appliedFilters: remainingFilters,
+                // Take the original rides and filter it by the remaining filters
+              filteredRides
             };
         default:
             return state;

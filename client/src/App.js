@@ -53,6 +53,7 @@ class App extends Component {
     }
 
     toggleRideFilter(name, toggle) {
+        console.log(toggle);
         toggle ?
         this.props.applyRideFilter(name) :
         this.props.removeRideFilter(name);
