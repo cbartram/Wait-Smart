@@ -109,4 +109,4 @@ class App extends Component {
     }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(withContainer(App));
+export default withContainer(connect(mapStateToProps, mapDispatchToProps)(App));

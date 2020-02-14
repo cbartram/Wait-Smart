@@ -173,9 +173,9 @@ const batchWriteAndRetry = async (batches) => {
 
 
 exports.handler = async () => {
-
-    if(!moment().isBetween(moment().hour(7), moment().hour(21))) {
-        console.log(`[INFO] The current time: ${moment().format('hh:mm A')} is not between ${moment().hour(7).format('hh:mm A')} and ${moment().hour(21).format('hh:mm A')}`);
+    // moment.tz.setDefault("America/New_York");
+    if(!moment().subtract(5, 'hours').isBetween(moment().subtract(5, 'hours').hour(7).minute(0), moment().subtract(5, 'hours').hour(21).minute(0))) {
+        console.log(`[INFO] The current time: ${moment().subtract(5, 'hours').format('YYYY-M-D hh:mm A')} is not between ${moment().hour(7).minute(0).format('YYYY-M-D hh:mm A')} and ${moment().hour(21).minute(0).format('YYYY-M-D hh:mm A')}`);
         return {
             total: 0,
             numAttempted: 0,
