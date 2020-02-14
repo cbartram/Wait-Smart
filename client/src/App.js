@@ -2,18 +2,14 @@ import React, { Component } from 'react';
 import {
     Card,
     Image,
-    Container,
-    Menu,
     Label,
     Header,
     Loader,
 } from 'semantic-ui-react';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import ScrollView from "./components/ScrollView/ScrollView";
-import Navbar from './components/Navbar/Navbar';
-import Logo from './resources/images/logo.png';
 import './App.css';
-import SearchField from "./components/SearchField/SearchField";
 import {applyRideFilter, getPark, getRides, removeRideFilter } from "./actions/actions";
 import LineChart from "./components/LineChart/LineChart";
 import withContainer from "./components/withContainer";
@@ -50,12 +46,19 @@ class App extends Component {
     }
 
     componentDidMount() {
+        // TODO should be done by component did mount in router?
+        // or in index.js
         this.props.getRides();
         this.props.getPark(this.state.initialPark)
     }
 
+    /**
+     * Toggles a rides filter either on or off
+     * @param name String the name of the filter to toggle
+     * @param toggle Boolean true if the filter is being toggled on and false if the filter is being
+     * removed
+     */
     toggleRideFilter(name, toggle) {
-        console.log(toggle);
         toggle ?
         this.props.applyRideFilter(name) :
         this.props.removeRideFilter(name);
@@ -74,7 +77,7 @@ class App extends Component {
         if(this.props.isFetchingParks) return <Loader active />;
         return (
             <div>
-                <ScrollView style={{ paddingLeft: 20, paddingRight: 20 }}>
+                <ScrollView>
                     {
                         Object.keys(this.state.rideCategories).map(key => {
                           return (
@@ -90,7 +93,7 @@ class App extends Component {
                     {
                         this.props.rides.map(ride => {
                             return (
-                                <Card key={ride.MblDisplayName}>
+                                <Card key={ride.MblDisplayName} onClick={() => this.props.history.push(`/ride/${ride.Id}`)}>
                                     <Image src={ride.ThumbnailImage} wrapped ui={false}/>
                                     <Card.Content>
                                         <Card.Header>{ride.MblDisplayName}</Card.Header>
@@ -109,4 +112,4 @@ class App extends Component {
     }
 }
 
-export default withContainer(connect(mapStateToProps, mapDispatchToProps)(App));
+export default withContainer(withRouter(connect(mapStateToProps, mapDispatchToProps)(App)));

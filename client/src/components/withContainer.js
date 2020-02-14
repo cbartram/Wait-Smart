@@ -4,19 +4,17 @@ import Navbar from "./Navbar/Navbar";
 import TopNavbar from "./Navbar/TopNavbar";
 
 
-const withContainer = (BaseComponent, props) => {
+const withContainer = (BaseComponent, containerStyle = {}, props = {}) => {
     return class EnhancedComponent extends Component {
-        constructor(props) {
-            super(props);
-        }
-
         render() {
             return (
-                <Container>
+                <div>
                     <TopNavbar/>
-                    <BaseComponent {...props} />
+                        <Container>
+                            <BaseComponent {...props} />
+                        </Container>
                     <Navbar/>
-                </Container>
+                </div>
             )
         }
     }

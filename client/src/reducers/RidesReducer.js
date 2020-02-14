@@ -1,3 +1,4 @@
+import keyBy from 'lodash/keyBy';
 import * as constants from '../constants';
 
 /**
@@ -14,10 +15,10 @@ export default (state = { isFetching: true, rides: [], filteredRides: [], applie
                 isFetching: true,
             };
         case constants.FETCH_RIDES_SUCCESS:
-            console.log(action.payload);
             return {
               ...state,
               isFetching: false,
+              ridesMap: keyBy(action.payload.rides, 'Id'),
               rides: action.payload.rides,
               filteredRides: action.payload.rides,
             };
