@@ -21,8 +21,6 @@ const mapStateToProps = (state) => ({
     parks: state.parks
 });
 const mapDispatchToProps = (dispatch) => ({
-    getRides: () => dispatch(getRides()),
-    getPark: (id) => dispatch(getPark(id)),
     applyRideFilter: (filter) => dispatch(applyRideFilter(filter)),
     removeRideFilter: (filter) => dispatch(removeRideFilter(filter))
 });
@@ -43,13 +41,6 @@ class App extends Component {
             initialPark: 10010 // The park that is loaded into the graph when page loads
         }
 
-    }
-
-    componentDidMount() {
-        // TODO should be done by component did mount in router?
-        // or in index.js
-        this.props.getRides();
-        this.props.getPark(this.state.initialPark)
     }
 
     /**

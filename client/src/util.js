@@ -32,6 +32,59 @@ export const matchSearchQuery = (query, element, green = false) => {
     return <p className="mb-1 text-truncate muted">{element}</p>
 };
 
+let currentStore;
+// Object holding action types as keys and promises as values which need resolutions
+const typeResolvers = {};
+
+/**
+ * Custom Redux middleware which wraps the action being dispatched
+ * in a promise which can be resolved or rejected before continuing
+ * @param store Object redux store
+ * @returns {function(*): Function}
+ */
+export const dispatchProcessMiddleware = (store) => {
+    currentStore = store;
+    return next => (action) => {
+        const resolvers = typeResolvers[action.type];
+        if (resolvers && resolvers.length > 0) {
+            resolvers.forEach(resolve => resolve());
+        }
+        next(action);
+    };
+};
+
+/**
+ * Unique Dispatch which can use promises to wait for async dispatch
+ * actions to complete successfully or fail gracefully.
+ * @param requestAction Function the action being dispatched (called as a function)
+ * @param successActionType String the action type if the async action was successful
+ * @param failureActionType String the action type if the async action was un-successful
+ * @returns {Promise<any>}
+ */
+export const dispatchProcess = (requestAction, successActionType, failureActionType = undefined) => {
+    if (!currentStore) {
+        throw new Error('dispatchProcess middleware must be registered');
+    }
+
+    if (!successActionType) {
+        throw new Error('At least one action to resolve process is required');
+    }
+
+
+    const promise = new Promise((resolve, reject) => {
+        typeResolvers[successActionType] = typeResolvers[successActionType] || [];
+        typeResolvers[successActionType].push(resolve);
+        if (failureActionType) {
+            typeResolvers[failureActionType] = typeResolvers[failureActionType] || [];
+            typeResolvers[failureActionType].push(reject);
+        }
+    });
+
+    currentStore.dispatch(requestAction);
+
+    return promise;
+};
+
 /**
  * Makes a generic POST request to the API to insert, or update
  * data and dispatches actions to redux to update application state based on the response.

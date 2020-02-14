@@ -4,7 +4,10 @@ import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import App from "../../App";
 import RideDetail from "../../pages/RideDetail/RideDetail";
 
-const Router = () => {
+const Router = (props) => {
+    if(props.error) {
+        return <h1>Error rendering application. Please refresh the page</h1>
+    }
     return (
         <BrowserRouter>
             <Switch>
