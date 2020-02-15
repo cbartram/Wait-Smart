@@ -1,13 +1,14 @@
 import {Menu} from "semantic-ui-react";
+import { withRouter } from 'react-router-dom';
 import Logo from "../../resources/images/logo.png";
 import SearchField from "../SearchField/SearchField";
 import React from "react";
 
-const TopNavbar = () => {
+const TopNavbar = (props) => {
   return (
-      <Menu>
+      <Menu style={{ marginBottom: 0 }}>
           <Menu.Item>
-              <img src={Logo}  alt="logo" />
+              <img src={Logo}  alt="logo" onClick={() => props.history.push('/')} />
           </Menu.Item>
           <Menu.Item>
               <SearchField
@@ -19,4 +20,4 @@ const TopNavbar = () => {
   )
 };
 
-export default TopNavbar;
+export default withRouter(TopNavbar);

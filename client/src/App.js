@@ -10,7 +10,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import ScrollView from "./components/ScrollView/ScrollView";
 import './App.css';
-import {applyRideFilter, getPark, getRides, removeRideFilter } from "./actions/actions";
+import {applyRideFilter, removeRideFilter } from "./actions/actions";
 import LineChart from "./components/LineChart/LineChart";
 import withContainer from "./components/withContainer";
 
@@ -67,7 +67,7 @@ class App extends Component {
     render() {
         if(this.props.isFetchingParks) return <Loader active />;
         return (
-            <div>
+            <div className="pt-3 ml-2">
                 <ScrollView>
                     {
                         Object.keys(this.state.rideCategories).map(key => {

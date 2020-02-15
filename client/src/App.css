@@ -10,6 +10,11 @@
     border-radius: 0;
 }
 
+.ui.container {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
 .ui.menu .item:before {
     width: 0;
     background: white;
@@ -65,6 +70,14 @@
 .my-1 {
     margin-top: 10px !important;
     margin-bottom: 10px !important;
+}
+
+.pt-3 {
+    padding-top: 1.5em;
+}
+
+.ml-2 {
+    margin-left: 1em;
 }
 
 .body-text {
