@@ -5,8 +5,9 @@ import moment from 'moment';
 class LineChart extends Component {
   chartRef = React.createRef();
   componentDidMount() {
-    const data = this.props.data.map(({ wait }) => wait);
-    const labels = this.props.data.map(({ sid }) => moment(sid).format('hh:mm A'));
+    const s = this.props.data.sort((a, b) => a.sid - b.sid);
+    const data = s.map(({ wait }) => wait);
+    const labels = s.map(({ sid }) => moment(sid).format('hh:mm A'));
 
     new Chart(this.chartRef.current.getContext("2d"), {
       type: "line",

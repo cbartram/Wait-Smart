@@ -11,7 +11,7 @@ const SearchField = (props) => (
           leading: true,
         })}
         placeholder="Search for Anything"
-        results={[]}
+        results={props.results}
     />
 );
 

@@ -49,8 +49,8 @@ const RideDetail = (props) => {
                 <h2>{ride.MblDisplayName}</h2>
                 <ScrollView>
                     {
-                        [...ride.RideTypes, ...ride.Tags].map(category => (
-                            <Label className='label-active'>
+                        [...ride.RideTypes, ...ride.Tags].map((category, i) => (
+                            <Label key={category + i} className='label-active'>
                                 { category }
                             </Label>
                         ))

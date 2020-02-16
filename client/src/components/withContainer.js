@@ -3,7 +3,6 @@ import {Container} from "semantic-ui-react";
 import Navbar from "./Navbar/Navbar";
 import TopNavbar from "./Navbar/TopNavbar";
 
-
 const withContainer = (BaseComponent, containerStyle = {}, props = {}) => {
     return class EnhancedComponent extends Component {
         render() {
@@ -17,7 +16,7 @@ const withContainer = (BaseComponent, containerStyle = {}, props = {}) => {
                 </div>
             )
         }
-    }
+    };
 };
 
 export default withContainer;
