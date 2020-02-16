@@ -14,16 +14,26 @@ const mapStateToProps = state => ({
 
 
 const TopNavbar = (props) => {
+    const source = props.rides.map(ride => ({ id: ride.Id, title: ride.MblDisplayName, image: ride.ThumbnailImage, price: `${ride.WaitTime} min` }));
     const [loading, setLoading] = useState(false);
     const [value, setValue] = useState('');
-    const [results, setResults] = useState(props.rides.map(ride => ({ id: ride.Id, title: ride.MblDisplayName, image: ride.ThumbnailImage, price: `${ride.WaitTime} min` })));
+    const [originalResults] = useState(source);
+    const [results, setResults] = useState(source);
 
+    /**
+     * Handles a user making a search query
+     * @param val
+     */
     const handleSearchChange = (val) => {
         setLoading(true);
         setValue(val);
 
         setTimeout(() => {
-            if (val.length < 1) return;
+            // The user has deleted a character from their query
+            if(val.length < value.length) {
+                setResults(originalResults);
+                return;
+            }
 
             const re = new RegExp(escapeRegExp(value), 'i');
             const isMatch = (result) => re.test(result.title);
