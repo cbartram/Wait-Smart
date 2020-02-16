@@ -10,7 +10,7 @@ import {Favorite, Folder, Home, BarChart} from "@material-ui/icons";
  */
 const Navbar = () => {
     return (
-        <BottomNavigation className="sticky-navbar" onChange={() =>{}}>
+        <BottomNavigation className="sticky-navbar" onChange={() =>{}} style={{ zIndex: 9999 }}>
             <BottomNavigationAction label="Recents" value="recents" icon={<Home />} />
             <BottomNavigationAction label="Favorites" value="favorites" icon={<Favorite />} />
             <BottomNavigationAction label="Nearby" value="nearby" icon={<BarChart />} />
