@@ -33,6 +33,17 @@ app.get('/', async (req, res) => {
     }
 });
 
+app.get('/rides/park', async (req, res) => {
+    console.log('[INFO] Mapping rides to parks...');
+    try {
+        const access_token = await getUniversalAccessToken();
+        const poi = await getPointsOfInterest(access_token);
+        res.json({ statusCode: 200, parks: _.groupBy(poi.Rides, 'LandId') });
+    } catch(err) {
+        console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
+        res.status(500).json({ message: 'Failed to retrieve ride data from Universal API', error: err });
+    }
+});
 /**
  * Finds all rides for a specific park and aggregates the real
  * time average of the wait times for the park as a whole.
