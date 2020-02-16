@@ -6,6 +6,7 @@ import ImageGallery from 'react-image-gallery';
 import './RideDetail.css'
 import {Label} from "semantic-ui-react";
 import ScrollView from "../../components/ScrollView/ScrollView";
+import LineChart from "../../components/LineChart/LineChart";
 
 const mapStateToProps = (state) => ({
    rides: state.rides.ridesMap,
@@ -66,6 +67,9 @@ const RideDetail = (props) => {
                 <p className="body-text">
                     { parkNameForId(ride.LandId) }
                 </p>
+                <h3>Live Wait Time</h3>
+                {/* TODO implement this */}
+                <LineChart data={[]} />
                 <h3>Images</h3>
                 <ImageGallery items={ride.DetailImages.map(i => ({ original: i, thumbnail: i }))} />
             </div>

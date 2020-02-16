@@ -94,7 +94,7 @@ app.get('/rides/:id', async (req, res) => {
             KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
             ExpressionAttributeValues: {
                 ':pid': `RIDE-${req.params.id}`,
-                ':before': moment().subtract(10, 'minutes').valueOf(),
+                ':before': moment().startOf('day').valueOf(),
                 ':now': moment().valueOf()
             }
         }).promise();
