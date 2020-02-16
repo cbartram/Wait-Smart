@@ -44,7 +44,7 @@ const RideDetail = (props) => {
     const ride = props.rides[id];
     return (
         <div>
-            <img className="image-header" src={ride.ListImage} />
+            <img className="image-header" src={ride.ListImage} alt="ride detail header" />
             <div className="ml-2">
                 <h2>{ride.MblDisplayName}</h2>
                 <ScrollView>
