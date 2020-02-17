@@ -4,7 +4,7 @@
  */
 
 export const INITIAL_STATE = {};
-export const PROD_URL = 'https://a9y4qru7dg.execute-api.us-east-1.amazonaws.com/prod';
+export const PROD_URL = 'https://a9y4qru7dg.execute-api.us-east-1.amazonaws.com/dev'; // TODO change this to prod when ready
 export const DEV_URL = 'https://a9y4qru7dg.execute-api.us-east-1.amazonaws.com/dev';
 
 
