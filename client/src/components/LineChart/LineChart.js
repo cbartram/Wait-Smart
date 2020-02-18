@@ -15,9 +15,18 @@ class LineChart extends Component {
         labels,
         datasets: [{
             label: "Average Wait Time (minutes)",
-            backgroundColor: '#FF5A60',
-            pointBackgroundColor: '#FF5A60',
+            backgroundColor: 'rgba(255, 90, 96, .8)',
+            pointBackgroundColor: '#FFFFFF',
+            pointBorderColor: 'rgb(255, 90, 96)',
+            pointBorderWidth: 2,
+            lineTension: .6,
+            cubicInterpolationMode: 'default',
             data,
+            // Basically only draws every 5th point
+            pointRadius: (ctx) => {
+                if(ctx.dataIndex % 5 === 0) return 4;
+                return 0;
+            },
           }
         ]
       },

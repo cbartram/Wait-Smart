@@ -92,8 +92,7 @@ const RideDetail = (props) => {
                     { parkNameForId(ride.LandId) }
                 </p>
                 <h3>Live Wait Time</h3>
-                {/* TODO implement this */}
-                <LineChart data={[]} />
+                <LineChart data={ride.waitTimes} />
                 <h3>Images</h3>
                 <ImageGallery items={ride.DetailImages.map(i => ({ original: i, thumbnail: i }))} />
             </div>

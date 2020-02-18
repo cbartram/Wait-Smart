@@ -102,7 +102,7 @@ app.get('/rides/:id', async (req, res) => {
         // Find additional ride meta-data from cache
         const rideMetaData = JSON.parse(await cache.getAsync(req.params.id));
         if(rideMetaData) {
-            res.json({...rideMetaData, statusCode: 200, waitTimes: Items.map(({ pid, sid, id, wait}) => ({ timestamp: sid, id, waitTime: wait }) )});
+            res.json({...rideMetaData, statusCode: 200, waitTimes: Items });
         } else {
             console.log('[INFO] Cache did not contain meta-data for ride: ', req.params.Id);
             res.json({ ...Items, statusCode: 200 });
