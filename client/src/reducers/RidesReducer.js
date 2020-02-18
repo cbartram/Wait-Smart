@@ -15,7 +15,6 @@ export default (state = { isFetching: true, rides: [], filteredRides: [], applie
                 isFetching: true,
             };
         case constants.FETCH_RIDE_SUCCESS:
-            console.log(action.payload);
             return {
                 ...state,
                 ridesMap: {

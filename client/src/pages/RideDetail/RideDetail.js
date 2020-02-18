@@ -57,13 +57,14 @@ const RideDetail = (props) => {
 
     useEffect(() => {
         // Re-retrieve latest ride wait times
-        console.log('[INFO] Use effect');
         props.getRide(id);
     }, [id]);
 
     if(!ride) {
         return <Loader active />
     }
+
+    console.log(ride);
 
     return (
         <div>
