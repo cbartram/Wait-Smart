@@ -10,7 +10,8 @@ import { get } from '../util';
  * @returns {function(...[*]=)}
  */
 export const getRide = (id) => async (dispatch, getState) => {
-    await get(constants.GET_RIDE + id, constants.FETCH_RIDES_REQUEST, constants.FETCH_RIDES_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState);
+    // Notice: We piggy back off of the FETCH_RIDES_REQUEST & FAILURE however the success reducer is different
+    await get(constants.GET_RIDE + id, constants.FETCH_RIDES_REQUEST, constants.FETCH_RIDE_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState);
 };
 
 /**

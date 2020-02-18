@@ -7,18 +7,27 @@ import * as constants from '../constants';
  * @param action Object action being dispatched (includes action.payload which is the data)
  * @returns {{result: *}}
  */
-export default (state = { isFetching: true, rides: [], filteredRides: [], appliedFilters: [] }, action) => {
+export default (state = { isFetching: true, rides: [], filteredRides: [], appliedFilters: [], ridesMap: {} }, action) => {
     switch (action.type) {
         case constants.FETCH_RIDES_REQUEST:
             return {
                 ...state,
                 isFetching: true,
             };
+        case constants.FETCH_RIDE_SUCCESS:
+            console.log(action.payload);
+            return {
+                ...state,
+                ridesMap: {
+                    ...state.ridesMap,
+                    [action.payload.Id]: action.payload,
+                }
+            };
         case constants.FETCH_RIDES_SUCCESS:
             return {
               ...state,
               isFetching: false,
-              ridesMap: keyBy(action.payload.rides, 'Id'),
+              // ridesMap: keyBy(action.payload.rides, 'Id'),
               rides: action.payload.rides,
               filteredRides: action.payload.rides,
             };

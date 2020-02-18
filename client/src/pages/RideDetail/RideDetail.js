@@ -1,17 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import withContainer from "../../components/withContainer";
 import {connect} from "react-redux";
 import ImageGallery from 'react-image-gallery';
 import './RideDetail.css'
-import {Label} from "semantic-ui-react";
+import {Label, Loader} from "semantic-ui-react";
 import ScrollView from "../../components/ScrollView/ScrollView";
 import LineChart from "../../components/LineChart/LineChart";
+import {getRide} from "../../actions/actions";
 
 const mapStateToProps = (state) => ({
-   rides: state.rides.ridesMap,
+   ride: state.rides.ridesMap,
 });
 
+const mapDispatchToProps = (dispatch) => ({
+    getRide: (id) => dispatch(getRide(id))
+});
+
+
+/**
+ * Given the land the ride is in (Seuss world, jurassic land, simpsons land etc) returns the parks
+ * name (universal, islands of adventure etc)...
+ * @param id Integer the land of the id
+ * @returns {string}
+ */
 const parkNameForId = (id) => {
     switch(id) {
         case 10142:
@@ -41,7 +53,18 @@ const parkNameForId = (id) => {
 
 const RideDetail = (props) => {
     let { id } = useParams();
-    const ride = props.rides[id];
+    const ride = props.ride[id];
+
+    useEffect(() => {
+        // Re-retrieve latest ride wait times
+        console.log('[INFO] Use effect');
+        props.getRide(id);
+    }, [id]);
+
+    if(!ride) {
+        return <Loader active />
+    }
+
     return (
         <div>
             <img className="image-header" src={ride.ListImage} alt="ride detail header" />
@@ -77,4 +100,4 @@ const RideDetail = (props) => {
     )
 };
 
-export default withContainer(connect(mapStateToProps)(RideDetail));
+export default withContainer(connect(mapStateToProps, mapDispatchToProps)(RideDetail));
