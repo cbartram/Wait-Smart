@@ -8,6 +8,7 @@ import {Label, Loader} from "semantic-ui-react";
 import ScrollView from "../../components/ScrollView/ScrollView";
 import LineChart from "../../components/LineChart/LineChart";
 import {getRide} from "../../actions/actions";
+import Map from '../../components/Map/Map';
 
 const mapStateToProps = (state) => ({
    ride: state.rides.ridesMap,
@@ -86,6 +87,13 @@ const RideDetail = (props) => {
                 <p className="body-text">
                     { parkNameForId(ride.LandId) }
                 </p>
+                <h3>Location</h3>
+                <Map
+                    googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
+                    loadingElement={<div style={{ height: `100%` }} />}
+                    containerElement={<div style={{ height: `400px`, borderRadius: 5 }} />}
+                    mapElement={<div style={{ height: `100%` }} />}
+                />
                 <h3>Live Wait Time</h3>
                 <LineChart data={ride.waitTimes} />
                 <h3>Images</h3>

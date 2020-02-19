@@ -10,7 +10,9 @@ const withContainer = (BaseComponent, containerStyle = {}, props = {}) => {
                 <div>
                     <TopNavbar/>
                         <Container>
-                            <BaseComponent {...props} />
+                            <div style={{ marginBottom: 60 }}>
+                                <BaseComponent {...props} />
+                            </div>
                         </Container>
                     <Navbar/>
                 </div>
