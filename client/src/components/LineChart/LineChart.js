@@ -1,9 +1,16 @@
 import React, { Component } from 'react'
 import Chart from "chart.js";
 import moment from 'moment';
+import 'chartjs-plugin-zoom';
+
+
 
 class LineChart extends Component {
   chartRef = React.createRef();
+
+    /**
+     * Creates a new chart and renders it into an HTML canvas
+     */
   componentDidMount() {
     const s = this.props.data.sort((a, b) => a.sid - b.sid);
     const data = s.map(({ wait }) => wait);
@@ -19,7 +26,7 @@ class LineChart extends Component {
             pointBackgroundColor: '#FFFFFF',
             pointBorderColor: 'rgb(255, 90, 96)',
             pointBorderWidth: 2,
-            lineTension: .6,
+            lineTension: 0,
             cubicInterpolationMode: 'default',
             data,
             // Basically only draws every 5th point
@@ -45,8 +52,21 @@ class LineChart extends Component {
                 display: true,
               }
             }]
-          }
-      }
+          },
+            plugins: {
+                zoom: {
+                    pan: {
+                        enabled: true,
+                        mode: 'x'
+                    },
+                    zoom: {
+                        enabled: true,
+                        drag: true,
+                        mode: 'xy'
+                    }
+                }
+            }
+      },
     });
   }
 

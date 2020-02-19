@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import withContainer from "../../components/withContainer";
 import {connect} from "react-redux";
@@ -60,12 +60,7 @@ const RideDetail = (props) => {
         props.getRide(id);
     }, [id]);
 
-    if(!ride) {
-        return <Loader active />
-    }
-
-    console.log(ride);
-
+    if(!ride) return <Loader active />;
     return (
         <div>
             <img className="image-header" src={ride.ListImage} alt="ride detail header" />
@@ -85,7 +80,7 @@ const RideDetail = (props) => {
                 </p>
                 <h3>Current Wait</h3>
                 <p className="body-text">
-                    { ride.WaitTime } minutes
+                    { ride.waitTimes.length > 0 ? `${ride.waitTimes[ride.waitTimes.length - 1].wait } minutes` : 'Unknown'}
                 </p>
                 <h3>Park</h3>
                 <p className="body-text">

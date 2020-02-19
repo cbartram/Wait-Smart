@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import {Menu} from "semantic-ui-react";
+import { Menu } from "semantic-ui-react";
 import { withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import Logo from "../../resources/images/logo.png";
