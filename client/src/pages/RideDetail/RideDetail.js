@@ -56,9 +56,11 @@ const RideDetail = (props) => {
     let { id } = useParams();
     const ride = props.ride[id];
 
+    const { getRide } = props;
+
     useEffect(() => {
         // Re-retrieve latest ride wait times
-        props.getRide(id);
+        getRide(id);
     }, [id]);
 
     if(!ride) return <Loader active />;
@@ -76,28 +78,30 @@ const RideDetail = (props) => {
                         ))
                     }
                 </ScrollView>
-                <p className="body-text">
-                    { ride.MblShortDescription }
-                </p>
-                <h3>Current Wait</h3>
-                <p className="body-text">
-                    { ride.waitTimes.length > 0 ? `${ride.waitTimes[ride.waitTimes.length - 1].wait } minutes` : 'Unknown'}
-                </p>
-                <h3>Park</h3>
-                <p className="body-text">
-                    { parkNameForId(ride.LandId) }
-                </p>
-                <h3>Location</h3>
-                <Map
-                    googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=geometry,drawing,places"
-                    loadingElement={<div style={{ height: `100%` }} />}
-                    containerElement={<div style={{ height: `400px`, borderRadius: 5 }} />}
-                    mapElement={<div style={{ height: `100%` }} />}
-                />
-                <h3>Live Wait Time</h3>
-                <LineChart data={ride.waitTimes} />
-                <h3>Images</h3>
-                <ImageGallery items={ride.DetailImages.map(i => ({ original: i, thumbnail: i }))} />
+                <div className="pr-1">
+                    <p className="body-text">
+                        { ride.MblShortDescription }
+                    </p>
+                    <h3>Current Wait</h3>
+                    <p className="body-text">
+                        { ride.waitTimes.length > 0 ? `${ride.waitTimes[ride.waitTimes.length - 1].wait } minutes` : 'Unknown'}
+                    </p>
+                    <h3>Park</h3>
+                    <p className="body-text">
+                        { parkNameForId(ride.LandId) }
+                    </p>
+                    <h3>Location</h3>
+                    <Map
+                        googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAOJjljJbkJCP68LkDlrQwdKApjgCcRK2M&libraries=geometry,drawing,places"
+                        loadingElement={<div style={{ height: `100%` }} />}
+                        containerElement={<div style={{ height: `400px`, borderRadius: 5 }} />}
+                        mapElement={<div style={{ height: `100%` }} />}
+                    />
+                    <h3>Live Wait Time</h3>
+                    <LineChart data={ride.waitTimes} />
+                    <h3>Images</h3>
+                    <ImageGallery items={ride.DetailImages.map(i => ({ original: i, thumbnail: i }))} />
+                </div>
             </div>
         </div>
     )

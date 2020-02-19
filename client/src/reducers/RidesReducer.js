@@ -1,4 +1,3 @@
-import keyBy from 'lodash/keyBy';
 import * as constants from '../constants';
 
 /**
