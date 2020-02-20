@@ -93,9 +93,11 @@ const RideDetail = (props) => {
                     <h3>Location</h3>
                     <Map
                         googleMapURL="https://maps.googleapis.com/maps/api/js?v=3.exp&key=AIzaSyAOJjljJbkJCP68LkDlrQwdKApjgCcRK2M&libraries=geometry,drawing,places"
-                        loadingElement={<div style={{ height: `100%` }} />}
+                        lat={ride.Latitude}
+                        lng={ride.Longitude}
+                        loadingElement={<Loader active />}
                         containerElement={<div style={{ height: `400px`, borderRadius: 5 }} />}
-                        mapElement={<div style={{ height: `100%` }} />}
+                        mapElement={<div style={{ height: `100%`, borderRadius: 5 }} />}
                     />
                     <h3>Live Wait Time</h3>
                     <LineChart data={ride.waitTimes} />

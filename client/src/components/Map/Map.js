@@ -11,10 +11,10 @@ class Map extends Component {
   render() {
     return (
         <GoogleMap
-            defaultZoom={8}
-            defaultCenter={{ lat: -34.397, lng: 150.644 }}
+            defaultZoom={18}
+            defaultCenter={{ lat: this.props.lat, lng: this.props.lng }}
         >
-          <Marker position={{ lat: -34.397, lng: 150.644 }} />
+          <Marker position={{ lat: this.props.lat, lng: this.props.lng }} />
         </GoogleMap>
     )
   }
