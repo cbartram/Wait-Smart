@@ -1,7 +1,30 @@
+var fs = require('fs');
 const chalk = require('chalk');
 const moment = require('moment');
+const parse = require('csv-parse');
 const tf = require('@tensorflow/tfjs');
 require('@tensorflow/tfjs-node');
+
+
+
+const csvData = [];
+fs.createReadStream('../data/2020_02_22.csv')
+    .pipe(parse({delimiter: ','}))
+    .on('data', function(csvrow) {
+        csvData.push([moment(csvrow[0], 'x').format('MM.DD.YYYY HH:mm:ss'), csvrow[1], csvrow[2]]);
+    })
+    .on('end',function() {
+
+        csvData.map(row => {
+
+        });
+        // fs.writeFile('', 'Hello World!', function (err) {
+        //     if (err) return console.log(err);
+        //     console.log('Hello World > helloworld.txt');
+        // });
+        console.log(csvData)
+    });
+
 
 
 /**

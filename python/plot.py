@@ -5,6 +5,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import datetime as dt
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
@@ -15,8 +16,20 @@ BATCH_SIZE = 256
 BUFFER_SIZE = 10000
 EVALUATION_INTERVAL = 200
 EPOCHS = 10
+univariate_past_history = 20
+univariate_future_target = 0
 
 
+'''
+The function below returns the above described windows of time for the model to train on. The parameter history_size 
+is the size of the past window of information. The target_size is how far in the future does the model need to learn to predict.
+The target_size is the label that needs to be predicted.
+:param dataset The dataset 
+:param start_index
+:param end_index
+:param history_size The parameter history_size is the size of the past window of information.
+:param target_size  The target_size is how far in the future does the model need to learn to predict. The target_size is the label that needs to be predicted.
+'''
 def univariate_data(dataset, start_index, end_index, history_size, target_size):
     data = []
     labels = []
@@ -27,6 +40,7 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
 
     for i in range(start_index, end_index):
         indices = range(i - history_size, i)
+        # Reshape data from (history_size,) to (history_size, 1)
         data.append(np.reshape(dataset[indices], (history_size, 1)))
         labels.append(dataset[i+target_size])
     return np.array(data), np.array(labels)
@@ -61,57 +75,60 @@ def baseline(history):
 
 tf.random.set_seed(13)
 
-df = pd.read_csv('../data/2020_02_22.csv').groupby('ride')
+df = pd.read_csv('../data/2020_02_22.csv')
+df['timestamp'] = df['timestamp'].apply(lambda x: dt.datetime.utcfromtimestamp(int(x)).strftime('%m.%d.%Y %H:%M:%S'))
+# df['timestamp'] =  pd.to_datetime(df['timestamp'], format='%m.%d.%Y %H:%M:%S') # 01.01.2009 00:10:00
+
+df.groupby('ride')
 df = df.get_group(10135)
+print(df.head())
 
 uni_data = df['wait']
 uni_data.index = df['timestamp']
 uni_data.head()
-
 uni_data.plot(subplots=True)
 
-uni_data = uni_data.values
+plt.show()
 
-uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
-uni_train_std = uni_data[:TRAIN_SPLIT].std()
-
-uni_data = (uni_data - uni_train_mean) / uni_train_std
-
-univariate_past_history = 20
-univariate_future_target = 0
-
-x_train_uni, y_train_uni = univariate_data(uni_data, 0, TRAIN_SPLIT, univariate_past_history, univariate_future_target)
-x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None, univariate_past_history, univariate_future_target)
-
-print ('Single window of past history')
-print (x_train_uni[0])
-print ('\n Target wait time to predict')
-print (y_train_uni[0])
-
-show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0, 'Baseline Prediction Example')
-
-train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
-train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
-
-val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
-val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
-
-simple_lstm_model = tf.keras.models.Sequential([
-    tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-    tf.keras.layers.Dense(1)
-])
-
-simple_lstm_model.compile(optimizer='adam', loss='mae')
-
-for x, y in val_univariate.take(1):
-    print(simple_lstm_model.predict(x).shape)
-
-
-simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
-                      steps_per_epoch=EVALUATION_INTERVAL,
-                      validation_data=val_univariate, validation_steps=50)
-
-for x, y in val_univariate.take(3):
-    plot = show_plot([x[0].numpy(), y[0].numpy(),
-                      simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-    plot.show()
+# uni_data = uni_data.values
+#
+# uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
+# uni_train_std = uni_data[:TRAIN_SPLIT].std()
+#
+# uni_data = (uni_data - uni_train_mean) / uni_train_std
+#
+# x_train_uni, y_train_uni = univariate_data(uni_data, 0, TRAIN_SPLIT, univariate_past_history, univariate_future_target)
+# x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None, univariate_past_history, univariate_future_target)
+#
+# print ('Single window of past history')
+# print (x_train_uni[0])
+# print ('\n Target wait time to predict')
+# print (y_train_uni[0])
+#
+# show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0, 'Baseline Prediction Example')
+#
+# train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
+# train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
+#
+# val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
+# val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
+#
+# simple_lstm_model = tf.keras.models.Sequential([
+#     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
+#     tf.keras.layers.Dense(1)
+# ])
+#
+# simple_lstm_model.compile(optimizer='adam', loss='mae')
+#
+# for x, y in val_univariate.take(1):
+#     print(simple_lstm_model.predict(x).shape)
+#
+#
+# simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
+#                       steps_per_epoch=EVALUATION_INTERVAL,
+#                       validation_data=val_univariate, validation_steps=50)
+#
+# for x, y in val_univariate.take(3):
+#     plot = show_plot([x[0].numpy(), y[0].numpy(),
+#                       simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
+#     plot.show()

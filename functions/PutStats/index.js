@@ -183,6 +183,8 @@ exports.handler = async () => {
         }
     }
 
+    console.log('[INFO] Current Unix Time: ', moment().valueOf());
+
     const token = await getAccessToken();
 
     const data = await getWaitTimes(token);
