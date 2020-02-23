@@ -5,19 +5,17 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import datetime as dt
 
 mpl.rcParams['figure.figsize'] = (8, 6)
 mpl.rcParams['axes.grid'] = False
 
-# First 1000 rows will be used for training and the last 124 rows will be used for validation
-TRAIN_SPLIT = 1000
+TRAIN_SPLIT = 900 # Use 80% of the data for training and 20% for validation
 BATCH_SIZE = 256
 BUFFER_SIZE = 10000
 EVALUATION_INTERVAL = 200
 EPOCHS = 10
-univariate_past_history = 20
-univariate_future_target = 0
+PAST_HISTORY = 20
+FUTURE_TARGET = 0
 
 
 '''
@@ -42,15 +40,21 @@ def univariate_data(dataset, start_index, end_index, history_size, target_size):
         indices = range(i - history_size, i)
         # Reshape data from (history_size,) to (history_size, 1)
         data.append(np.reshape(dataset[indices], (history_size, 1)))
-        labels.append(dataset[i+target_size])
+        labels.append(dataset[i + target_size])
     return np.array(data), np.array(labels)
 
 
 def create_time_steps(length):
     return list(range(-length, 0))
 
+'''
+ The information given to the network is given in blue, and it must predict the value at the red cross.
+ :param plot_data
+ :param delta
+ :param title String the title of the plot
+'''
 def show_plot(plot_data, delta, title):
-    labels = ['History', 'True Future', 'Model Prediction']
+    labels = ['Historic Wait Times', 'Actual Future Wait Time', 'Model Prediction']
     marker = ['.-', 'rx', 'go']
     time_steps = create_time_steps(plot_data[0].shape[0])
     if delta:
@@ -70,65 +74,58 @@ def show_plot(plot_data, delta, title):
     plt.xlabel('Time-Step')
     return plt
 
+'''
+By taking a simple average of the historical records. This is the baseline by which
+we compare the RNN against. The result of this value determines how well our neural network
+performs.
+'''
 def baseline(history):
     return np.mean(history)
 
 tf.random.set_seed(13)
 
-df = pd.read_csv('../data/2020_02_22.csv')
-df['timestamp'] = df['timestamp'].apply(lambda x: dt.datetime.utcfromtimestamp(int(x)).strftime('%m.%d.%Y %H:%M:%S'))
-# df['timestamp'] =  pd.to_datetime(df['timestamp'], format='%m.%d.%Y %H:%M:%S') # 01.01.2009 00:10:00
-
-df.groupby('ride')
+df = pd.read_csv('../data/waitsmart_ride_wait_times.csv')
+df = df.groupby('ride')
 df = df.get_group(10135)
-print(df.head())
 
 uni_data = df['wait']
 uni_data.index = df['timestamp']
 uni_data.head()
-uni_data.plot(subplots=True)
 
+uni_data = uni_data.values
+uni_data = (uni_data - uni_data[:TRAIN_SPLIT].mean()) / uni_data[:TRAIN_SPLIT].std()
+
+x_train_uni, y_train_uni = univariate_data(uni_data, 0, TRAIN_SPLIT, PAST_HISTORY, FUTURE_TARGET)
+x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None, PAST_HISTORY, FUTURE_TARGET)
+
+print ('Single window of past history')
+print (x_train_uni[0])
+print ('\n Target wait time to predict')
+print (y_train_uni[0])
+
+show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0, 'Baseline Prediction Example')
 plt.show()
 
-# uni_data = uni_data.values
-#
-# uni_train_mean = uni_data[:TRAIN_SPLIT].mean()
-# uni_train_std = uni_data[:TRAIN_SPLIT].std()
-#
-# uni_data = (uni_data - uni_train_mean) / uni_train_std
-#
-# x_train_uni, y_train_uni = univariate_data(uni_data, 0, TRAIN_SPLIT, univariate_past_history, univariate_future_target)
-# x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None, univariate_past_history, univariate_future_target)
-#
-# print ('Single window of past history')
-# print (x_train_uni[0])
-# print ('\n Target wait time to predict')
-# print (y_train_uni[0])
-#
-# show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0, 'Baseline Prediction Example')
-#
-# train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
-# train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
-#
-# val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
-# val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
-#
-# simple_lstm_model = tf.keras.models.Sequential([
-#     tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
-#     tf.keras.layers.Dense(1)
-# ])
-#
-# simple_lstm_model.compile(optimizer='adam', loss='mae')
-#
-# for x, y in val_univariate.take(1):
-#     print(simple_lstm_model.predict(x).shape)
-#
-#
-# simple_lstm_model.fit(train_univariate, epochs=EPOCHS,
-#                       steps_per_epoch=EVALUATION_INTERVAL,
-#                       validation_data=val_univariate, validation_steps=50)
-#
-# for x, y in val_univariate.take(3):
-#     plot = show_plot([x[0].numpy(), y[0].numpy(),
-#                       simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-#     plot.show()
+train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
+train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
+
+val_univariate = tf.data.Dataset.from_tensor_slices((x_val_uni, y_val_uni))
+val_univariate = val_univariate.batch(BATCH_SIZE).repeat()
+
+simple_lstm_model = tf.keras.models.Sequential([
+    tf.keras.layers.LSTM(8, input_shape=x_train_uni.shape[-2:]),
+    tf.keras.layers.Dense(1)
+])
+
+simple_lstm_model.compile(optimizer='adam', loss='mae')
+
+for x, y in val_univariate.take(1):
+    print("Sample Prediction: ")
+    print(simple_lstm_model.predict(x).shape)
+
+
+simple_lstm_model.fit(train_univariate, epochs=EPOCHS, steps_per_epoch=EVALUATION_INTERVAL, validation_data=val_univariate, validation_steps=50)
+
+for x, y in val_univariate.take(3):
+    plot = show_plot([x[0].numpy(), y[0].numpy(), simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
+    plot.show()

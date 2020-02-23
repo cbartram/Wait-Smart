@@ -7,24 +7,23 @@ require('@tensorflow/tfjs-node');
 
 
 
-const csvData = [];
-fs.createReadStream('../data/2020_02_22.csv')
-    .pipe(parse({delimiter: ','}))
-    .on('data', function(csvrow) {
-        csvData.push([moment(csvrow[0], 'x').format('MM.DD.YYYY HH:mm:ss'), csvrow[1], csvrow[2]]);
-    })
-    .on('end',function() {
-
-        csvData.map(row => {
-
-        });
-        // fs.writeFile('', 'Hello World!', function (err) {
-        //     if (err) return console.log(err);
-        //     console.log('Hello World > helloworld.txt');
-        // });
-        console.log(csvData)
-    });
-
+// const csvData = [];
+// fs.createReadStream('../data/2020_02_22.csv')
+//     .pipe(parse({delimiter: ','}))
+//     .on('data', function(csvrow) {
+//         csvData.push([moment(csvrow[0], 'x').format('MM.DD.YYYY HH:mm:ss'), csvrow[1], csvrow[2]]);
+//     })
+//     .on('end',function() {
+//         let file = 'timestamp,ride,wait\n';
+//         csvData.forEach(row => {
+//             file += row.join(",") + "\n";
+//         });
+//         fs.writeFile(`../data/${moment().format('YYYY-MM-DD_HH:mm:ss')}.csv`, file, function (err) {
+//             if (err) return console.log(err);
+//             console.log('[INFO] Done.');
+//         });
+//     });
+//
 
 
 /**
