@@ -28,7 +28,7 @@ The target_size is the label that needs to be predicted.
 :param history_size The parameter history_size is the size of the past window of information.
 :param target_size  The target_size is how far in the future does the model need to learn to predict. The target_size is the label that needs to be predicted.
 '''
-def univariate_data(dataset, start_index, end_index, history_size, target_size):
+def normalize(dataset, start_index, end_index, history_size, target_size):
     data = []
     labels = []
 
@@ -93,10 +93,13 @@ uni_data.index = df['timestamp']
 uni_data.head()
 
 uni_data = uni_data.values
-uni_data = (uni_data - uni_data[:TRAIN_SPLIT].mean()) / uni_data[:TRAIN_SPLIT].std()
+uni_data_values = uni_data
+uni_data_mean = uni_data[:TRAIN_SPLIT].mean()
+uni_data_std = uni_data[:TRAIN_SPLIT].std()
+uni_data = (uni_data - uni_data_mean) / uni_data_std
 
-x_train_uni, y_train_uni = univariate_data(uni_data, 0, TRAIN_SPLIT, PAST_HISTORY, FUTURE_TARGET)
-x_val_uni, y_val_uni = univariate_data(uni_data, TRAIN_SPLIT, None, PAST_HISTORY, FUTURE_TARGET)
+x_train_uni, y_train_uni = normalize(uni_data, 0, TRAIN_SPLIT, PAST_HISTORY, FUTURE_TARGET)
+x_val_uni, y_val_uni = normalize(uni_data, TRAIN_SPLIT, None, PAST_HISTORY, FUTURE_TARGET)
 
 print ('Single window of past history')
 print (x_train_uni[0])
@@ -104,7 +107,7 @@ print ('\n Target wait time to predict')
 print (y_train_uni[0])
 
 show_plot([x_train_uni[0], y_train_uni[0], baseline(x_train_uni[0])], 0, 'Baseline Prediction Example')
-plt.show()
+# plt.show()
 
 train_univariate = tf.data.Dataset.from_tensor_slices((x_train_uni, y_train_uni))
 train_univariate = train_univariate.cache().shuffle(BUFFER_SIZE).batch(BATCH_SIZE).repeat()
@@ -127,5 +130,10 @@ for x, y in val_univariate.take(1):
 simple_lstm_model.fit(train_univariate, epochs=EPOCHS, steps_per_epoch=EVALUATION_INTERVAL, validation_data=val_univariate, validation_steps=50)
 
 for x, y in val_univariate.take(3):
+    print("Prediction")
+    normalized_prediction = simple_lstm_model.predict(x)
+    predicted_wait_time = (normalized_prediction * uni_data_std) + uni_data_mean
+    print("Predicted wait time: ")
+    print(predicted_wait_time)
     plot = show_plot([x[0].numpy(), y[0].numpy(), simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-    plot.show()
+    # plot.show()
