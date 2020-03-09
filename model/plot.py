@@ -130,8 +130,16 @@ for x, y in val_univariate.take(1):
 simple_lstm_model.fit(train_univariate, epochs=EPOCHS, steps_per_epoch=EVALUATION_INTERVAL, validation_data=val_univariate, validation_steps=50)
 
 for x, y in val_univariate.take(3):
-    print("Prediction")
+    print("Normalized Prediction")
     normalized_prediction = simple_lstm_model.predict(x)
+    print(normalized_prediction)
+
+    print("X Value: ")
+    print(x)
+
+    print("Y Value: ")
+    print(y)
+
     predicted_wait_time = (normalized_prediction * uni_data_std) + uni_data_mean
     print("Predicted wait time: ")
     print(predicted_wait_time)
