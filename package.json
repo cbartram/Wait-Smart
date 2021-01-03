@@ -4,7 +4,7 @@
   "description": "WaitSmart Backend serverless lambda function",
   "main": "index.js",
   "scripts": {
-    "start": "node src/index.js",
+    "start": "node index.js",
     "start:dev": "nodemon test.js",
     "test": "NODE_ENV=test ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit"
   },

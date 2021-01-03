@@ -7,7 +7,8 @@ const {
     getUniversalAccessToken,
     getPointsOfInterest
 } = require('./src/utils');
-const cache = require('./src/redis');
+const poiData = require('./data/pointsOfInterest.json');
+const cache = process.env.NO_CACHE == null ? require('./src/redis') : null;
 const { DYNAMODB_TABLE_NAME } = process.env;
 
 AWS.config.update({
@@ -99,19 +100,20 @@ app.get('/rides/:id', async (req, res) => {
             }
         }).promise();
 
-        // Find additional ride meta-data from cache
-        const rideMetaData = JSON.parse(await cache.getAsync(req.params.id));
-        if(rideMetaData) {
-            res.json({...rideMetaData, statusCode: 200, waitTimes: Items });
+        // Find additional ride meta-data
+        if(cache == null)  {
+            console.log('[INFO] Cache is disabled. Finding ride meta-data via local json file for ride id: ', req.params.id);
+            const rideMetadata = _.find(poiData.Rides, ride => ride.Id === req.params.id);
+            console.log('[INFO] Located ride metadata: ', rideMetadata)
+            res.json({ waitTimes: Items, statusCode: 200 });
         } else {
-            console.log('[INFO] Cache did not contain meta-data for ride: ', req.params.Id);
-            res.json({ ...Items, statusCode: 200 });
+            const rideMetadata = JSON.parse(await cache.getAsync(req.params.id));
+            res.json({...rideMetadata, statusCode: 200, waitTimes: Items});
         }
     } catch(err) {
         console.log('[ERROR] Failed to query for ride wait times within given range.', err);
         res.status(500).json({ message: 'Failed to query for ride wait times within the given range.', error: err });
     }
 });
-
 
 exports.handler = async (event, context) => app.listen(event, context);
