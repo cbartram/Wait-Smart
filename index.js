@@ -103,9 +103,11 @@ app.get('/rides/:id', async (req, res) => {
         // Find additional ride meta-data
         if(cache == null)  {
             console.log('[INFO] Cache is disabled. Finding ride meta-data via local json file for ride id: ', req.params.id);
-            const rideMetadata = _.find(poiData.Rides, ride => ride.Id === req.params.id);
+            const rideMetadata = _.find(poiData.Rides, ride => ride.Id === +req.params.id);
+            const other = poiData.Rides.filter(ride => ride.Id === parseInt(req.params.id));
+            console.log("Other rides: ", other);
             console.log('[INFO] Located ride metadata: ', rideMetadata)
-            res.json({ waitTimes: Items, statusCode: 200 });
+            res.json({ waitTimes: Items, ...rideMetadata, statusCode: 200 });
         } else {
             const rideMetadata = JSON.parse(await cache.getAsync(req.params.id));
             res.json({...rideMetadata, statusCode: 200, waitTimes: Items});
