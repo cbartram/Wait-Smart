@@ -84,56 +84,6 @@ const getPointsOfInterest = async (access_token) => {
 };
 
 
-async function writeRecords(item, itemMetadata) {
-    console.log("Writing records");
-    const dummyItem = {
-        "Item":{
-            "id":{
-                "N":"10853"
-            },
-            "pid": {
-                "S":"RIDE-10853"
-            },
-            "sid": {
-                 "N":"1592849431001"
-             },
-            "wait":{
-                "N":"25"
-            }
-        }
-    }
-
-    const dimensions = [
-        {'Name': 'rideId', 'Value': item.Item.id.N},
-        {'Name': 'rideName', 'Value': itemMetadata.MblDisplayName}
-    ];
-
-    const data = {
-        'Dimensions': dimensions,
-        'MeasureName': `ride_${item.Item.id.N}`,
-        'MeasureValue': item.Item.wait.N,
-        'MeasureValueType': 'DOUBLE',
-        'Time': item.Item.sid.N
-    };
-
-    const records = [data];
-
-    const params = {
-        DatabaseName: DATABASE_NAME,
-        TableName: TABLE_NAME,
-        Records: records
-    };
-
-    const request = writeClient.writeRecords(params);
-
-    await request.promise().then((data) => {
-            console.log("Write records successful data: ", data);
-        }, (err) => {
-            console.log("Error writing records:", err);
-        }
-    );
-}
-
 
 module.exports = {
     getUniversalAccessToken,
