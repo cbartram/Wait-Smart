@@ -10,6 +10,7 @@ import LineChart from "../../components/LineChart/LineChart";
 import {getRide} from "../../actions/actions";
 import Map from '../../components/Map/Map';
 import {IS_PROD} from "../../constants";
+import {parkNameForId} from "../../util";
 
 const mapStateToProps = (state) => ({
    ride: state.rides.ridesMap,
@@ -19,40 +20,12 @@ const mapDispatchToProps = (dispatch) => ({
     getRide: (id) => dispatch(getRide(id))
 });
 
-
 /**
- * Given the land the ride is in (Seuss world, jurassic land, simpsons land etc) returns the parks
- * name (universal, islands of adventure etc)...
- * @param id Integer the land of the id
- * @returns {string}
+ * Displays detailed information about a specific ride or attraction in each of the parks.
+ * @param props
+ * @returns {JSX.Element}
+ * @constructor
  */
-const parkNameForId = (id) => {
-    switch(id) {
-        case 10142:
-        case 10141:
-        case 10140:
-        case 10139:
-        case 10138:
-        case 10001:
-            return 'Islands of Adventure';
-        case 10145:
-        case 10146:
-        case 13099:
-        case 10144:
-        case 10012:
-        case 10143:
-            return 'Universal Studios';
-        case 14589:
-        case 14590:
-        case 14591:
-        case 14592:
-        case 15504:
-            return 'Volcano Bay';
-        default:
-            return 'Unknown';
-    }
-};
-
 const RideDetail = (props) => {
     let { id } = useParams();
 
@@ -74,7 +47,7 @@ const RideDetail = (props) => {
                 <ScrollView>
                     {
                         [...ride.RideTypes, ...ride.Tags].map((category, i) => (
-                            <Label key={category + i} className='label-active'>
+                            <Label key={category + i} className='ui label'>
                                 { category }
                             </Label>
                         ))

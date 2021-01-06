@@ -155,6 +155,40 @@ export const post = async (body, path, requestType, successType, failureType, di
 
 
 /**
+ * Given the land the ride is in (Seuss world, jurassic land, simpsons land etc) returns the parks
+ * name (universal, islands of adventure etc)...
+ * @param id Integer the land of the id
+ * @returns {string}
+ */
+export const parkNameForId = (id) => {
+    switch(id) {
+        case 10142:
+        case 10141:
+        case 10140:
+        case 10139:
+        case 10138:
+        case 10137:
+        case 10001:
+            return 'Islands of Adventure';
+        case 10145:
+        case 10146:
+        case 13099:
+        case 10144:
+        case 10012:
+        case 10143:
+            return 'Universal Studios';
+        case 14589:
+        case 14590:
+        case 14591:
+        case 14592:
+        case 15504:
+            return 'Volcano Bay';
+        default:
+            return 'City Walk';
+    }
+};
+
+/**
  * Makes a generic GET request to the API to retrieve
  * data and dispatches actions to redux to update application state based on the response.
  * @param path String the API path to POST to. This should begin with a /
