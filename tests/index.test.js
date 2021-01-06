@@ -98,7 +98,7 @@ describe('GET /', () => {
 
 describe('GET /rides/park', () => {
 
-    it('Finds all rides for a specific park', async () => {
+    it('Groups rides for all the theme parks', async () => {
         nock('https://services.universalorlando.com')
             .post('/api')
             .reply(200, DUMMY_TOKEN_RESPONSE);
@@ -133,4 +133,35 @@ describe('GET /rides/park', () => {
         expect(res.message).to.be.a('string').that.deep.equals("Failed to retrieve ride data from Universal API")
         expect(res.parks).to.be.a('object');
     });
-})
+});
+
+
+describe('GET /rides/park/:parkId', () => {
+
+    it('Returns error for invalid park Id', async () => {
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/park/BAD_ID'}, null);
+        expect(response.statusCode).to.be.a('number').that.equals(400);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.message).to.be.a('string').that.deep.equals('The park id must be an integer between 4 and 6 digits long.')
+    });
+
+    it('Finds all rides for a specific park', async () => {
+        nock('https://services.universalorlando.com')
+            .post('/api')
+            .reply(200, DUMMY_TOKEN_RESPONSE);
+
+        nock('https://services.universalorlando.com')
+            .get('/api/pointsOfInterest')
+            .reply(200, DUMMY_POI_RIDES_RESPONSE);
+
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/park/10134'}, null);
+
+        expect(response.statusCode).to.be.a('number').that.equals(200);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.parks['10138'].length).to.be.a('number').that.deep.equals(1)
+        expect(res.parks['10142'].length).to.be.a('number').that.deep.equals(1)
+        expect(res.parks['10143'].length).to.be.a('number').that.deep.equals(1)
+    });
+});

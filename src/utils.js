@@ -46,6 +46,18 @@ const getUniversalAccessToken = async () => {
 
 
 /**
+ * Determines if a park id is valid or invalid. Note: if the number of integers exceeds 6 it will
+ * match the first 6 integers.
+ * @param parkId String park id to check.
+ * @returns {boolean} Returns true if the park id is valid and false otherwise.
+ */
+const isValidParkId = (parkId) => {
+    let regex = new RegExp('\\d{4,6}');
+    return regex.test(parkId);
+}
+
+
+/**
  * Returns all points of interest data from the Universal API
  * @param access_token String the API access token retrieved from the #getUniversalAccessToken() API call
  * @returns {Promise<any>}
@@ -72,10 +84,11 @@ const getPointsOfInterest = async (access_token) => {
     }
 };
 
-console.log(moment.utc().format("ddd, DD MMM YYYY HH:mm:ss"))
-getUniversalAccessToken();
+// console.log(moment.utc().format("ddd, DD MMM YYYY HH:mm:ss"))
+// getUniversalAccessToken();
 
 module.exports = {
     getUniversalAccessToken,
     getPointsOfInterest,
+    isValidParkId
 };

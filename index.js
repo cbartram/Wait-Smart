@@ -5,7 +5,8 @@ const AWS = require('aws-sdk');
 const _ = require('lodash');
 const {
     getUniversalAccessToken,
-    getPointsOfInterest
+    getPointsOfInterest,
+    isValidParkId,
 } = require('./src/utils');
 const poiData = require('./data/pointsOfInterest.json');
 const {
@@ -68,9 +69,15 @@ app.get('/rides/park', async (req, res) => {
  * time average of the wait times for the park as a whole.
  */
 app.get('/rides/park/:parkId', async (req, res) => {
-    // TODO Validate park id
+    if(!isValidParkId(req.params.parkId)) {
+        console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.parkId);
+        res.status(400).json({
+            error: new Error('The park id must be an integer between 4 and 6 digits long.'),
+            message: 'The park id must be an integer between 4 and 6 digits long.'
+        });
+        return;
+    }
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
-    // TODO add pagination here
     const { Items } = await ddb.query({
         TableName: DYNAMODB_TABLE_NAME,
         KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
@@ -116,8 +123,7 @@ app.get('/rides', async (req, res) => {
 app.get('/rides/:id', async (req, res) => {
     // TODO check ride id against regex for a number
     console.log(`[INFO] Finding data for ride: ${req.params.id}`);
-    let regex = new RegExp('\d{4,6}');
-    if(!regex.test(req.params.id)) {
+    if(!isValidParkId(req.params.id)) {
         console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.id);
         res.status(400).json({
             error: new Error('The ride id must be an integer between 4 and 6 digits long.'),
