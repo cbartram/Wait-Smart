@@ -63,7 +63,9 @@ const RideDetail = (props) => {
                     </p>
                     <h3>Park</h3>
                     <p className="body-text">
-                        { parkNameForId(ride.LandId) }
+                        <Label className="ui label secondary">
+                            { parkNameForId(ride.LandId) }
+                        </Label>
                     </p>
                     <h3>Location</h3>
                     <Map

@@ -30,16 +30,13 @@ const TopNavbar = (props) => {
         const items = props.poi[key];
         if (items === null) return acc;
         if (items.length === 0) return acc;
-        const updatedItems = items.map(item => {
-            const searchablePoiData = {
+        const updatedItems = items.map(item => ({
                 id: item.Id,
                 title: item.Category === "Rides" ? `${item.MblDisplayName} - ${item.WaitTime} min wait` : item.MblDisplayName,
                 image: item.ThumbnailImage,
                 category: <span className="ui label">{item.Category.replace(/([A-Z])/g, ' $1').trim()}</span>,
                 park: <span className="ui label secondary">{parkNameForId(item.LandId)}</span>
-            };
-            return searchablePoiData;
-        });
+        }));
         return [...acc, ...updatedItems];
     }, []);
     const fuse = new Fuse(source, {
