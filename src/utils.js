@@ -35,9 +35,10 @@ const getUniversalAccessToken = async () => {
     const signature = signatureBuilder.digest('base64').replace(/=$/, '\u003d');
 
     const options = {
-        'method': 'POST',
-        'url': URL,
-        'headers': {
+        timeout: 5000,
+        method: 'POST',
+        url: URL,
+        headers: {
             'Date': today,
             'Content-Type': 'application/json'
         },

@@ -61,7 +61,7 @@ const RideDetail = (props) => {
     useEffect(() => {
         // Re-retrieve latest ride wait times
         getRide(id);
-    }, [id]);
+    }, [id, getRide]);
 
     if(!ride) return <Loader active />;
     return (

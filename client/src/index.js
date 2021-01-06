@@ -19,7 +19,6 @@ const store = createStore(rootReducer, constants.INITIAL_STATE, composeEnhancers
 ));
 
 const render = async () => {
-
     // Render a loading page immediately while we wait for our content to load
     ReactDOM.render(
         <Provider store={store}>

@@ -72,12 +72,19 @@ app.get('/rides/park/:parkId', async (req, res) => {
 app.get('/rides', async (req, res) => {
     console.log('[INFO] Finding data for all rides...');
     try {
+        console.log('[INFO] Fetching Universal OAuth access_token');
         const access_token = await getUniversalAccessToken();
+        console.log(`[INFO] Access token fetched successfully: ${access_token}. Finding points of interest...`);
         const poi = await getPointsOfInterest(access_token);
         res.json({ statusCode: 200, rides: poi.Rides });
     } catch(err) {
         console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(500).json({ message: 'Failed to retrieve ride data from Universal API', error: err });
+        res.status(500).json({
+            statusCode: 500,
+            rides: poiData.Rides,
+            message: 'Failed to retrieve ride data from Universal API. Data may be stale and out of date.',
+            error: err
+        });
     }
 });
 

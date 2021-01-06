@@ -1,4 +1,9 @@
-
+.search-highlight {
+    background-color: rgb(229, 236, 253);
+    color: #865fff;
+    border-radius: 7px;
+    padding: 5px 2px;
+}
 
 .sticky-navbar {
     width: 100%;

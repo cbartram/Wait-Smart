@@ -22,9 +22,9 @@ class LineChart extends Component {
         labels,
         datasets: [{
             label: "Average Wait Time (minutes)",
-            backgroundColor: 'rgba(255, 90, 96, .8)',
+            backgroundColor: '#58a6ff',
             pointBackgroundColor: '#FFFFFF',
-            pointBorderColor: 'rgb(255, 90, 96)',
+            pointBorderColor: '#58a6ff',
             pointBorderWidth: 2,
             lineTension: 0,
             cubicInterpolationMode: 'default',

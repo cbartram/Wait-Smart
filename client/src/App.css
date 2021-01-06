@@ -21,14 +21,18 @@
 }
 
 .ui.label {
-    border-radius: 20px;
-    padding: 10px;
-    min-width: 100px;
-    text-align: center;
-    margin-left: 6px;
-    color: rgb(34, 34, 34);
-    background-color: transparent;
-    border: 1px solid #FF5A60
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 500;
+    border: 1px solid #0000;
+    border-radius: 2em;
+    padding: 10px 10px;
+    line-height: 18px;
+    white-space: nowrap;
+    cursor:pointer;
+    color: #58a6ff;
+    background-color: rgba(56, 139, 253, .1);
+    margin: 0 .3em .3em 0;
 }
 
 .label-active {
