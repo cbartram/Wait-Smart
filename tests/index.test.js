@@ -1,6 +1,9 @@
 const { describe, it } = require('mocha');
 const expect = require('chai').expect;
 const nock = require('nock');
+const sinon = require('sinon');
+const sandbox = sinon.createSandbox();
+const AWS = require('aws-sdk');
 const index = require('../index');
 
 const DUMMY_TOKEN_RESPONSE = {
@@ -137,6 +140,22 @@ describe('GET /rides/park', () => {
 
 
 describe('GET /rides/park/:parkId', () => {
+    const result = {
+        Items: [{
+            "pid": "RIDE-10842",
+            "sid": 1582468900881,
+            "wait": 5,
+            "id": 10842
+        }
+    ]};
+
+    before(() => {
+        sandbox.stub(AWS.DynamoDB.DocumentClient.prototype, 'query').returns({ promise: () => result });
+    });
+
+    after(() => {
+        sandbox.restore();
+    });
 
     it('Returns error for invalid park Id', async () => {
         const response = await index.handler({httpMethod: 'GET', path: '/rides/park/BAD_ID'}, null);
@@ -147,21 +166,11 @@ describe('GET /rides/park/:parkId', () => {
     });
 
     it('Finds all rides for a specific park', async () => {
-        nock('https://services.universalorlando.com')
-            .post('/api')
-            .reply(200, DUMMY_TOKEN_RESPONSE);
-
-        nock('https://services.universalorlando.com')
-            .get('/api/pointsOfInterest')
-            .reply(200, DUMMY_POI_RIDES_RESPONSE);
-
         const response = await index.handler({httpMethod: 'GET', path: '/rides/park/10134'}, null);
-
         expect(response.statusCode).to.be.a('number').that.equals(200);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
-        expect(res.parks['10138'].length).to.be.a('number').that.deep.equals(1)
-        expect(res.parks['10142'].length).to.be.a('number').that.deep.equals(1)
-        expect(res.parks['10143'].length).to.be.a('number').that.deep.equals(1)
+        expect(res.park.length).to.be.a('number').that.equals(1);
+        expect(res.park).to.be.a('array').that.deep.equals(result.Items);
     });
 });
