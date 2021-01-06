@@ -33,13 +33,11 @@ const TopNavbar = (props) => {
         const updatedItems = items.map(item => {
             const searchablePoiData = {
                 id: item.Id,
-                title: item.MblDisplayName,
+                title: item.Category === "Rides" ? `${item.MblDisplayName} - ${item.WaitTime} min wait` : item.MblDisplayName,
                 image: item.ThumbnailImage,
                 category: <span className="ui label">{item.Category.replace(/([A-Z])/g, ' $1').trim()}</span>,
                 park: <span className="ui label secondary">{parkNameForId(item.LandId)}</span>
             };
-
-            if (item.Category === "Rides") searchablePoiData['wait'] = `${item.WaitTime} min`;
             return searchablePoiData;
         });
         return [...acc, ...updatedItems];
@@ -81,7 +79,7 @@ const TopNavbar = (props) => {
             <div className="d-flex align-items-center px-3 py-2 search-row-item">
                 {/*<Image avatar height={30} width={30} src={item.images[0]} />*/}
                 <div className="d-flex flex-column">
-                    {matchSearchQuery(value, item.title)}
+                    { matchSearchQuery(value, item.title) }
                     {item.category}
                     {item.park}
                 </div>
