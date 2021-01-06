@@ -5,24 +5,13 @@
  */
 const moment = require('moment');
 const crypto = require('crypto');
-const https = require('https');
-const AWS = require("aws-sdk");
 const request = require('request-promise-native');
 const {
     CLIENT_ID,
     CLIENT_SECRET,
     NODE_ENV
 } = process.env;
-const { URL, DATABASE_NAME, TABLE_NAME } = require('./constants');
-const writeClient = new AWS.TimestreamWrite({
-    maxRetries: 10,
-    httpOptions: {
-        timeout: 10000,
-        agent: new https.Agent({
-            maxSockets: 5000
-        })
-    }
-});
+const { URL } = require('./constants');
 
 /**
  * Retrieves the universal OAuth access token. The token is valid
@@ -30,10 +19,9 @@ const writeClient = new AWS.TimestreamWrite({
  */
 const getUniversalAccessToken = async () => {
     const today = `${moment.utc().format('ddd, DD MMM YYYY HH:mm:ss')} GMT`;
-    const signatureBuilder = crypto.createHmac('sha256', CLIENT_SECRET);
-    signatureBuilder.update(`${CLIENT_ID}\n${today}\n`);
+    const signatureBuilder = crypto.createHmac('sha256', CLIENT_SECRET || 'default');
+    signatureBuilder.update(`${CLIENT_ID || 'default'}\n${today}\n`);
     const signature = signatureBuilder.digest('base64').replace(/=$/, '\u003d');
-
     const options = {
         timeout: 5000,
         method: 'POST',
@@ -65,7 +53,7 @@ const getUniversalAccessToken = async () => {
 const getPointsOfInterest = async (access_token) => {
     const ridesOptions = {
         'method': 'GET',
-        'url': URL + '/pointsOfInterest',
+        'url': `${URL}/pointsOfInterest`,
         'headers': {
             'Date': `${moment.utc().format("ddd, DD MMM YYYY HH:mm:ss")} GMT`,
             'Content-Type': 'application/json; charset=UTF-8',
@@ -84,7 +72,8 @@ const getPointsOfInterest = async (access_token) => {
     }
 };
 
-
+console.log(moment.utc().format("ddd, DD MMM YYYY HH:mm:ss"))
+getUniversalAccessToken();
 
 module.exports = {
     getUniversalAccessToken,

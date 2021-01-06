@@ -8,13 +8,15 @@ const {
     getPointsOfInterest
 } = require('./src/utils');
 const poiData = require('./data/pointsOfInterest.json');
-const cache = process.env.NO_CACHE == null ? require('./src/redis') : null;
-const { DYNAMODB_TABLE_NAME } = process.env;
+const {
+    NO_CACHE,
+    NODE_ENV,
+    DYNAMODB_TABLE_NAME
+} = process.env;
+const cache = NO_CACHE == null ? require('./src/redis') : null;
 
-AWS.config.update({
-   region: 'us-east-1'
-});
-const ddb = new AWS.DynamoDB.DocumentClient({ region: 'us-east-1' });
+AWS.config.update({ region: 'us-east-1' });
+const ddb = new AWS.DynamoDB.DocumentClient();
 const app = new Api();
 
 app.cors();
@@ -25,26 +27,42 @@ app.cors();
  */
 app.get('/', async (req, res) => {
     try {
+        console.log('[INFO] Finding All POI Data...');
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
         res.json(poi);
     } catch(err) {
-        console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
-        res.status(500).json({ message: 'Failed to retrieve point of interest data from Universal API', error: err });
+        NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
+        res.status(500).json({
+            message: 'Failed to retrieve point of interest data from Universal API',
+            poi: poiData,
+            error: err
+        });
     }
 });
 
+/**
+ * Groups rides into their respective parks.
+ */
 app.get('/rides/park', async (req, res) => {
     console.log('[INFO] Mapping rides to parks...');
     try {
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
-        res.json({ statusCode: 200, parks: _.groupBy(poi.Rides, 'LandId') });
+        console.log('[INFO] Successfully fetched points of interest and access token. Token =', access_token);
+        res.status(200).json({
+            parks: _.groupBy(poi.Rides, 'LandId')
+        });
     } catch(err) {
-        console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(500).json({ message: 'Failed to retrieve ride data from Universal API', error: err });
+        NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
+        res.status(500).json({
+            message: 'Failed to retrieve ride data from Universal API',
+            parks: _.groupBy(poiData.Rides, 'LandId'),
+            error: err
+        });
     }
-});
+})
+
 /**
  * Finds all rides for a specific park and aggregates the real
  * time average of the wait times for the park as a whole.
@@ -62,7 +80,10 @@ app.get('/rides/park/:parkId', async (req, res) => {
             ':now': moment().valueOf()
         }
     }).promise();
-    res.json({ park: Items, id: req.params.parkId, statusCode: 200 });
+    res.status(200).json({
+        park: Items,
+        id: req.params.parkId
+    });
 });
 
 /**
@@ -76,11 +97,10 @@ app.get('/rides', async (req, res) => {
         const access_token = await getUniversalAccessToken();
         console.log(`[INFO] Access token fetched successfully: ${access_token}. Finding points of interest...`);
         const poi = await getPointsOfInterest(access_token);
-        res.json({ statusCode: 200, rides: poi.Rides });
+        res.status(200).json({ rides: poi.Rides });
     } catch(err) {
-        console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
+        NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
         res.status(500).json({
-            statusCode: 500,
             rides: poiData.Rides,
             message: 'Failed to retrieve ride data from Universal API. Data may be stale and out of date.',
             error: err
@@ -96,7 +116,17 @@ app.get('/rides', async (req, res) => {
 app.get('/rides/:id', async (req, res) => {
     // TODO check ride id against regex for a number
     console.log(`[INFO] Finding data for ride: ${req.params.id}`);
+    let regex = new RegExp('\d{4,6}');
+    if(!regex.test(req.params.id)) {
+        console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.id);
+        res.status(400).json({
+            error: new Error('The ride id must be an integer between 4 and 6 digits long.'),
+            message: 'The ride id must be an integer between 4 and 6 digits long.'
+        });
+        return;
+    }
     try {
+        console.log('[INFO] Finding ride in database with id: ', req.params.id)
         const { Items } = await ddb.query({
             TableName: DYNAMODB_TABLE_NAME,
             KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
@@ -120,7 +150,7 @@ app.get('/rides/:id', async (req, res) => {
             res.json({...rideMetadata, statusCode: 200, waitTimes: Items});
         }
     } catch(err) {
-        console.log('[ERROR] Failed to query for ride wait times within given range.', err);
+        NODE_ENV !== "test" && console.log('[ERROR] Failed to query for ride wait times within given range.', err);
         res.status(500).json({ message: 'Failed to query for ride wait times within the given range.', error: err });
     }
 });
