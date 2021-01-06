@@ -6,7 +6,26 @@ import fetchRidesResponse from '../data/fetchRidesResponse.json';
 import fetchRideResponse from '../data/fetchRideResponse.json';
 import fetchParkResponse from '../data/fetchParkResponse.json';
 import { get } from '../util';
-import {FETCH_PARK_SUCCESS, FETCH_RIDE_SUCCESS, FETCH_RIDES_SUCCESS, IS_PROD} from "../constants";
+import {
+    FETCH_PARK_SUCCESS,
+    FETCH_RIDE_SUCCESS,
+    FETCH_RIDES_SUCCESS,
+    IS_PROD,
+    LOAD_POINTS_OF_INTEREST
+} from "../constants";
+
+
+/**
+ * Loads the points of interest json map into redux.
+ * @param payload Json String of points of interest
+ * @returns {{payload: *, type: string}}
+ */
+export const loadPointsOfInterest = (payload) => {
+    return {
+        type: LOAD_POINTS_OF_INTEREST,
+        payload,
+    }
+}
 
 /**
  * Retrieves a single ride's meta-data from the API
@@ -23,7 +42,7 @@ export const getRide = (rideId) => async (dispatch, getState) => {
                 type: FETCH_RIDE_SUCCESS,
                 payload: fetchRideResponse
             });
-        }, 2000)
+        }, 1000)
     } else {
         // Notice: We piggy back off of the FETCH_RIDES_REQUEST & FAILURE however the success reducer is different
         await get(constants.GET_RIDE.replace("{rideId}", rideId), constants.FETCH_RIDES_REQUEST, constants.FETCH_RIDE_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState);
@@ -44,7 +63,7 @@ export const getRides = () => async (dispatch, getState) => {
                 type: FETCH_RIDES_SUCCESS,
                 payload: fetchRidesResponse
             });
-        }, 2200)
+        }, 1000)
     } else {
         await get(constants.GET_ALL_RIDES, constants.FETCH_RIDES_REQUEST, FETCH_RIDES_SUCCESS, constants.FETCH_RIDES_FAILURE, dispatch, getState);
     }

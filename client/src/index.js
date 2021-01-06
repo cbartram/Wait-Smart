@@ -10,7 +10,8 @@ import Router from './components/Router/Router';
 import * as serviceWorker from './serviceWorker';
 import {dispatchProcess, dispatchProcessMiddleware} from "./util";
 import {Loader} from "semantic-ui-react";
-import {getPark, getRides} from "./actions/actions";
+import {getPark, getRides, loadPointsOfInterest} from "./actions/actions";
+import poiData from './data/pointsOfInterest.json';
 
 // Setup Redux middleware and store
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
@@ -25,6 +26,7 @@ const render = async () => {
             <Loader active />
         </Provider>,document.getElementById('root'));
 
+    store.dispatch(loadPointsOfInterest(poiData));
     await dispatchProcess(getRides(), constants.FETCH_RIDES_SUCCESS, constants.FETCH_RIDES_FAILURE);
     await dispatchProcess(getPark(10010), constants.FETCH_PARK_SUCCESS, constants.FETCH_PARK_FAILURE);
 

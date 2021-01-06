@@ -37,6 +37,7 @@ export const GET_RIDE = '/rides/{rideId}';
 export const GET_PARK_WAIT_TIME = '/rides/park/{parkId}';
 
 // Redux constants
+export const LOAD_POINTS_OF_INTEREST = 'LOAD_POINTS_OF_INTEREST';
 export const FETCH_RIDES_REQUEST = 'FETCH_RIDES_REQUEST';
 export const FETCH_RIDES_SUCCESS = 'FETCH_RIDES_SUCCESS';
 export const FETCH_RIDES_FAILURE = 'FETCH_RIDES_FAILURE';

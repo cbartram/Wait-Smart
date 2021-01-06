@@ -1,6 +1,6 @@
 .search-highlight {
-    background-color: rgb(229, 236, 253);
-    color: #865fff;
+    color: #58a6ff;
+    background-color: rgba(56, 139, 253, .1);
     border-radius: 7px;
     padding: 5px 2px;
 }

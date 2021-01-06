@@ -9,6 +9,7 @@ import ScrollView from "../../components/ScrollView/ScrollView";
 import LineChart from "../../components/LineChart/LineChart";
 import {getRide} from "../../actions/actions";
 import Map from '../../components/Map/Map';
+import {IS_PROD} from "../../constants";
 
 const mapStateToProps = (state) => ({
    ride: state.rides.ridesMap,
@@ -54,7 +55,8 @@ const parkNameForId = (id) => {
 
 const RideDetail = (props) => {
     let { id } = useParams();
-    const ride = props.ride[id];
+
+    const ride = IS_PROD ? props.ride[id] : props.ride["10831"];
 
     const { getRide } = props;
 
