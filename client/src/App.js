@@ -12,7 +12,7 @@ import ScrollView from "./components/ScrollView/ScrollView";
 import './App.css';
 import {applyRideFilter, removeRideFilter } from "./actions/actions";
 import LineChart from "./components/LineChart/LineChart";
-import withContainer from "./components/withContainer";
+import withContainer from "./components/hoc/withContainer";
 
 const mapStateToProps = (state) => ({
     rides: state.rides.filteredRides,

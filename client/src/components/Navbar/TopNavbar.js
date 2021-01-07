@@ -6,8 +6,7 @@ import Fuse from 'fuse.js'
 import Logo from "../../resources/images/logo.png";
 import {matchSearchQuery, parkNameForId} from "../../util";
 import SearchField from "../SearchField/SearchField";
-import escapeRegExp from 'lodash/escapeRegExp';
-import filter from 'lodash/filter';
+import Alert from '../Alert/Alert';
 
 const mapStateToProps = state => ({
     rides: state.rides.rides,
@@ -85,20 +84,22 @@ const TopNavbar = (props) => {
     }
 
     return (
-        <Menu style={{marginBottom: 0}}>
-            <Menu.Item>
-                <img src={Logo} alt="logo" onClick={() => props.history.push('/')}/>
-            </Menu.Item>
-            <Menu.Item>
-                <SearchField
-                    loading={loading}
-                    results={results}
-                    handleResultSelect={(e, {result}) => props.history.push(`/ride/${result.id}`)}
-                    handleSearchChange={({target}) => handleSearchChange(target.value)}
-                    renderSearchRow={(item) => renderSearchRow(item)}
-                />
-            </Menu.Item>
-        </Menu>
+        <div>
+            <Menu style={{marginBottom: 0}}>
+                <Menu.Item>
+                    <img src={Logo} alt="logo" onClick={() => props.history.push('/')}/>
+                </Menu.Item>
+                <Menu.Item>
+                    <SearchField
+                        loading={loading}
+                        results={results}
+                        handleResultSelect={(e, {result}) => props.history.push(`/ride/${result.id}`)}
+                        handleSearchChange={({target}) => handleSearchChange(target.value)}
+                        renderSearchRow={(item) => renderSearchRow(item)}
+                    />
+                </Menu.Item>
+            </Menu>
+        </div>
     )
 };
 

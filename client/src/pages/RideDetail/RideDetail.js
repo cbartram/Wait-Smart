@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import withContainer from "../../components/withContainer";
+import withContainer from "../../components/hoc/withContainer";
 import {connect} from "react-redux";
 import ImageGallery from 'react-image-gallery';
 import './RideDetail.css'
@@ -28,9 +28,7 @@ const mapDispatchToProps = (dispatch) => ({
  */
 const RideDetail = (props) => {
     let { id } = useParams();
-
     const ride = IS_PROD ? props.ride[id] : props.ride["10831"];
-
     const { getRide } = props;
 
     useEffect(() => {
