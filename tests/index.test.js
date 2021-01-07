@@ -135,6 +135,27 @@ describe('GET /rides/:id', () => {
     });
 });
 
+
+describe('GET /rides/:id Failure', () => {
+    const result = { Items: [] };
+
+    before(() => {
+        sandbox.stub(AWS.DynamoDB.DocumentClient.prototype, 'query').returns({ promise: () => result });
+    });
+
+    after(() => {
+        sandbox.restore();
+    });
+
+    it('Returns 404 when no ride can be found from DynamoDb', async () => {
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/99999'}, null);
+        expect(response.statusCode).to.be.a('number').that.equals(404);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.message).to.be.a('string').that.deep.equals('Could not find ride data for ride id: 99999. Ensure the ride id is valid and specified correctly.');
+    });
+});
+
 describe('GET /rides', () => {
     it('Finds all rides', async () => {
         nock('https://services.universalorlando.com')

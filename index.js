@@ -79,7 +79,7 @@ app.get('/rides/park/:parkId', async (req, res) => {
     }
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
     try {
-        const {Items} = await ddb.query({
+        const { Items } = await ddb.query({
             TableName: DYNAMODB_TABLE_NAME,
             KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
             ExpressionAttributeValues: {
@@ -149,6 +149,13 @@ app.get('/rides/:id', async (req, res) => {
                 ':now': moment().valueOf()
             }
         }).promise();
+
+        if(Items.length === 0) {
+            res.status(404).json({
+                message: `Could not find ride data for ride id: ${req.params.id}. Ensure the ride id is valid and specified correctly.`,
+            });
+            return;
+        }
 
         // Find additional ride meta-data
         if(cache == null)  {
