@@ -1,6 +1,6 @@
 {
   "name": "wait-smart",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "WaitSmart Backend serverless lambda function",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,9 @@
     "coverage": "CI=true NODE_ENV=test DYNAMODB_TABLE_NAME=table CLIENT_ID=foo CLIENT_SECRET=foo NO_CACHE=true nyc --reporter=lcovonly --reporter=text ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit",
     "deploy:backend": "zip archive.zip -r -X ./index.js ./package.json ./node_modules ./src ./data && aws lambda update-function-code --function-name WaitSmart-Dev --zip-file fileb://archive.zip && rm archive.zip",
     "deploy:frontend": "echo \"Use aws s3 cli to update bucket with built objects\"",
-    "test": "NODE_ENV=test NO_CACHE=true ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit"
+    "test": "NODE_ENV=test NO_CACHE=true ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit",
+    "bump": "npm version patch --force",
+    "tag": "PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag $PACKAGE_VERSION && git push --tags"
   },
   "repository": {
     "type": "git",
@@ -44,7 +46,8 @@
     ".idea",
     "data",
     "model",
-    "node_modules"
+    "node_modules",
+    "pipeline"
   ],
   "homepage": "https://github.com/cbartram/Wait-Smart#readme",
   "devDependencies": {
