@@ -1,0 +1,62 @@
+# @file .travis.yml
+# This file serves as the configuration for the main CI/CD pipeline
+# for the WaitSmart backend
+language: node_js
+node_js:
+  - '12'
+env:
+  global:
+    - PATH=~/bin:$PATH
+    - AWS_REGION=us-east-1
+
+# Configures the sonarqube (sonarcloud) static code scan
+addons:
+  sonarcloud:
+    organization: cbartram-github
+
+# Downloads and sets up the AWS CLI and terraform artifacts & ensures they work
+before_script:
+  - pip install --user awscli
+  - aws --version
+  - wget https://releases.hashicorp.com/terraform/0.14.4/terraform_0.14.4_linux_amd64.zip &>/dev/null
+  - unzip -o terraform_0.14.4_linux_amd64.zip
+  - mv ./terraform ~/bin
+  - PATH=~/bin/terraform:$PATH
+  - rm terraform_0.14.4_linux_amd64.zip
+  - terraform --version
+
+before_install: npm i -g artillery # Save performance testing package
+
+# Checks out the actual commit so that the release never deploys from a tag name to S3
+install: npm install
+
+# Run the static tests on every commit
+script:
+  - NO_CACHE=true NODE_ENV=test npm test
+  - NO_CACHE=true NODE_ENV=test npm run coverage
+  - sh ./scripts/coding_style_tests.sh
+  - sonar-scanner
+
+# Create a release only on merges into master/develop
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: sh ./scripts/deploy.sh
+  on:
+    all_branches: true
+    condition: $TRAVIS_BRANCH =~ ^master|develop$
+after_deploy:
+  - npm install
+#  - npm run performance-tests
+#  - npm run integration-tests
+#  - npm run rollback
+
+# Cache node_modules npm and sonar for faster builds
+cache:
+  directories:
+    - "$HOME/.npm"
+    - "./node_modules"
+    - "$HOME/.sonar/cache"
+
+notifications:
+  email: false
