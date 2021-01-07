@@ -78,19 +78,27 @@ app.get('/rides/park/:parkId', async (req, res) => {
         return;
     }
     console.log('[INFO] Finding all rides for park Id: ', req.params.parkId);
-    const { Items } = await ddb.query({
-        TableName: DYNAMODB_TABLE_NAME,
-        KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
-        ExpressionAttributeValues: {
-            ':pid': `PARK-${req.params.parkId}`,
-            ':before': moment().startOf('day').valueOf(),
-            ':now': moment().valueOf()
-        }
-    }).promise();
-    res.status(200).json({
-        park: Items,
-        id: req.params.parkId
-    });
+    try {
+        const {Items} = await ddb.query({
+            TableName: DYNAMODB_TABLE_NAME,
+            KeyConditionExpression: 'pid = :pid AND sid BETWEEN :before AND :now',
+            ExpressionAttributeValues: {
+                ':pid': `PARK-${req.params.parkId}`,
+                ':before': moment().startOf('day').valueOf(),
+                ':now': moment().valueOf()
+            }
+        }).promise();
+        res.status(200).json({
+            park: Items,
+            id: req.params.parkId
+        });
+    } catch(err) {
+        NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from DynamoDb: ', err);
+        res.status(500).json({
+            message: 'Failed to retrieve ride data from Database',
+            error: err
+        });
+    }
 });
 
 /**
@@ -121,7 +129,6 @@ app.get('/rides', async (req, res) => {
  * The last 10 minutes of ride wait times are also pulled from the database.
  */
 app.get('/rides/:id', async (req, res) => {
-    // TODO check ride id against regex for a number
     console.log(`[INFO] Finding data for ride: ${req.params.id}`);
     if(!isValidParkId(req.params.id)) {
         console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.id);
@@ -147,13 +154,11 @@ app.get('/rides/:id', async (req, res) => {
         if(cache == null)  {
             console.log('[INFO] Cache is disabled. Finding ride meta-data via local json file for ride id: ', req.params.id);
             const rideMetadata = _.find(poiData.Rides, ride => ride.Id === +req.params.id);
-            const other = poiData.Rides.filter(ride => ride.Id === parseInt(req.params.id));
-            console.log("Other rides: ", other);
             console.log('[INFO] Located ride metadata: ', rideMetadata)
-            res.json({ waitTimes: Items, ...rideMetadata, statusCode: 200 });
+            res.status(200).json({ waitTimes: Items, ...rideMetadata });
         } else {
             const rideMetadata = JSON.parse(await cache.getAsync(req.params.id));
-            res.json({...rideMetadata, statusCode: 200, waitTimes: Items});
+            res.status(200).json({...rideMetadata, waitTimes: Items});
         }
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to query for ride wait times within given range.', err);

@@ -61,7 +61,6 @@ const DUMMY_POI_RIDES_RESPONSE = {
 }
 
 describe('GET /', () => {
-
     it('Successfully all POI data from universal API', async () => {
         nock('https://services.universalorlando.com')
             .post('/api')
@@ -98,9 +97,82 @@ describe('GET /', () => {
     });
 });
 
+describe('GET /rides/:id', () => {
+    const result = {
+        Items: [{
+            "pid": "RIDE-10842",
+            "sid": 1582468900881,
+            "wait": 5,
+            "id": 10842
+        }
+        ]};
+
+    before(() => {
+        sandbox.stub(AWS.DynamoDB.DocumentClient.prototype, 'query').returns({ promise: () => result });
+    });
+
+    after(() => {
+        sandbox.restore();
+    });
+
+    it('Returns 400 when id is not valid for ride', async () => {
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/BAD_ID'}, null);
+        expect(response.statusCode).to.be.a('number').that.equals(400);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.message).to.be.a('string').that.deep.equals('The ride id must be an integer between 4 and 6 digits long.')
+    });
+
+    it('Successfully finds rides from DynamoDb', async () => {
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/10842'}, null);
+        expect(response.statusCode).to.be.a('number').that.equals(200);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.waitTimes).to.be.a('array').that.deep.equals([{ pid: 'RIDE-10842', sid: 1582468900881, wait: 5, id: 10842 }]);
+
+        // Asserts metadata is present with ride data
+        expect(res.MinHeightInInches).to.be.a('number').that.deep.equals(42);
+    });
+});
+
+describe('GET /rides', () => {
+    it('Finds all rides', async () => {
+        nock('https://services.universalorlando.com')
+            .post('/api')
+            .reply(200, DUMMY_TOKEN_RESPONSE);
+
+        nock('https://services.universalorlando.com')
+            .get('/api/pointsOfInterest')
+            .reply(200, DUMMY_POI_RIDES_RESPONSE);
+
+        const response = await index.handler({httpMethod: 'GET', path: '/rides'}, null);
+
+        expect(response.statusCode).to.be.a('number').that.equals(200);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.rides.length).to.be.a('number').that.deep.equals(3)
+    });
+
+
+    it('Catches error and returns semi-stale metadata', async () => {
+        nock('https://services.universalorlando.com')
+            .post('/api')
+            .replyWithError({
+                message: '401 Not authorized'
+            });
+
+        const response = await index.handler({httpMethod: 'GET', path: '/rides'}, null);
+
+        expect(response.statusCode).to.be.a('number').that.equals(500);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.rides.length).to.be.a('number').that.deep.equals(32)
+        expect(res.message).to.be.a('string').that.deep.equals('Failed to retrieve ride data from Universal API. Data may be stale and out of date.')
+    });
+});
+
 
 describe('GET /rides/park', () => {
-
     it('Groups rides for all the theme parks', async () => {
         nock('https://services.universalorlando.com')
             .post('/api')
@@ -174,3 +246,23 @@ describe('GET /rides/park/:parkId', () => {
         expect(res.park).to.be.a('array').that.deep.equals(result.Items);
     });
 });
+
+describe('GET /rides/park/:parkId Failure', () => {
+    before(() => {
+        sandbox.stub(AWS.DynamoDB.DocumentClient.prototype, 'query').throws(function() {
+            return new Error("Security credentials are out of date");
+        });
+    });
+
+    after(() => {
+        sandbox.restore();
+    });
+
+    it('Catches DynamoDb error when finding rides in a specific park', async () => {
+        const response = await index.handler({httpMethod: 'GET', path: '/rides/park/10134'}, null);
+        expect(response.statusCode).to.be.a('number').that.equals(500);
+        expect(response.body).to.be.a('string');
+        const res = JSON.parse(response.body);
+        expect(res.message).to.be.a('string').that.equals('Failed to retrieve ride data from Database');
+    });
+})
