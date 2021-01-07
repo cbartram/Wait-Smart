@@ -17,10 +17,14 @@ TRAVIS_BRANCH=${TRAVIS_BRANCH}
 # --------------- Prod -----------------
 BUCKET_PROD=${BUCKET_PROD}
 DYNAMODB_TABLE_NAME_PROD=${DYNAMODB_TABLE_NAME_PROD}
+CLIENT_ID_PROD=${CLIENT_ID_PROD}
+CLIENT_SECRET_PROD=${CLIENT_SECRET_PROD}
 
 # --------------- DEV -----------------
-BUCKET_DEV=${BUCKET_DEV}
+BUCKET_DEV="waitsmart-artifacts"
 DYNAMODB_TABLE_NAME_DEV=${DYNAMODB_TABLE_NAME_DEV}
+CLIENT_ID_DEV=${CLIENT_ID_DEV}
+CLIENT_SECRET_DEV=${CLIENT_SECRET_DEV}
 
 # Used as a source to export the tricky version parsed from the package.json file
 # this is used as follows: source ./scripts/setup.sh ... then echo $VERSION prints the env version
@@ -36,7 +40,7 @@ if [ $TRAVIS_BRANCH = "master" ]; then
     echo "$GREEN[INFO] Using PROD environmental variables $NC"
     APP_ENV="PROD"
     CLIENT_ID=${CLIENT_ID_PROD}
-    CLIENT_SECRET=${CLIENT_ID_PROD}
+    CLIENT_SECRET=${CLIENT_SECRET_PROD}
     BUCKET=${BUCKET_PROD}
     DYNAMODB_TABLE_NAME=${DYNAMODB_TABLE_NAME_PROD}
     LAMBDA_FUNCTION_NAME="WaitSmart-API-prod"
@@ -44,7 +48,7 @@ else
     echo "$GREEN[INFO] Using DEV environmental variables $NC"
     APP_ENV="DEV"
     CLIENT_ID=${CLIENT_ID_DEV}
-    CLIENT_SECRET=${CLIENT_ID_DEV}
+    CLIENT_SECRET=${CLIENT_SECRET_DEV}
     BUCKET=${BUCKET_DEV}
     DYNAMODB_TABLE_NAME="WaitSmart-Dev"
     LAMBDA_FUNCTION_NAME="WaitSmart-API-dev"
