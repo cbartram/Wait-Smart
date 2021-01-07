@@ -1,12 +1,33 @@
 .flash {
-    color: #79c0ff;
-    background-image: linear-gradient(#388bfd1a,#388bfd1a);
-    border-color: #388bfd66;
     position: relative;
     padding: 20px 16px;
     border-style: solid;
     border-width: 1px;
     border-radius: 6px;
+}
+
+.flash-info {
+    color: #79c0ff;
+    background-image: linear-gradient(#388bfd1a,#388bfd1a);
+    border-color: #388bfd66;
+}
+
+.flash-warning {
+    color: #e3b341;
+    background-image: linear-gradient(#bb80091a,#bb80091a);
+    border-color: #bb800966;
+}
+
+.flash-success {
+    color: #3fb950;
+    background-image: linear-gradient(rgba(63, 185, 80, .1), rgba(63, 185, 80, .1));
+    border-color: rgba(63, 185, 80, .4);
+}
+
+.flash-danger {
+    color: #f85149;
+    background-image: linear-gradient(#da36331a,#da36331a);
+    border-color: #da363366;
 }
 
 .flash-full {

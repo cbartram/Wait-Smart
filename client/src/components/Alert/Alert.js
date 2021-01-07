@@ -29,7 +29,7 @@ function Alert(props) {
 
 
     return (
-        <div className="flash flash-full flash-notice">
+        <div className={`flash flash-${props.type.toLowerCase() || 'info'} flash-full flash-notice`}>
             { renderIconType() }
             <div className="px-2">
                 <button className="flash-close" type="button" aria-label="Dismiss this message" onClick={() => props.onDismiss(props.id)}>
