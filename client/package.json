@@ -27,11 +27,11 @@
     "semantic-ui-react": "^0.88.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start":  "SKIP_PREFLIGHT_CHECK=true react-scripts start",
     "deploy": "aws s3 sync build/ s3://waitsmart-dev-deployment --delete && aws cloudfront create-invalidation --distribution-id E1YSBFAL24YJKW --paths '/*'",
-    "build": "SKIP_PREFLIGHT_CHECK=true react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build":  "SKIP_PREFLIGHT_CHECK=true react-scripts build",
+    "test":   "SKIP_PREFLIGHT_CHECK=true react-scripts test",
+    "eject":  "SKIP_PREFLIGHT_CHECK=truereact-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"

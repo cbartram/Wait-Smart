@@ -6,7 +6,6 @@ import Fuse from 'fuse.js'
 import Logo from "../../resources/images/logo.png";
 import {matchSearchQuery, parkNameForId} from "../../util";
 import SearchField from "../SearchField/SearchField";
-import Alert from '../Alert/Alert';
 
 const mapStateToProps = state => ({
     rides: state.rides.rides,
