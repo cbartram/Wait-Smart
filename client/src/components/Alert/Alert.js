@@ -27,7 +27,6 @@ function Alert(props) {
         }
     }
 
-
     return (
         <div className={`flash flash-${props.type.toLowerCase() || 'info'} flash-full flash-notice`}>
             { renderIconType() }

@@ -7,8 +7,7 @@
     "start": "node index.js",
     "start:dev": "nodemon test.js",
     "coverage": "CI=true NODE_ENV=test DYNAMODB_TABLE_NAME=table CLIENT_ID=foo CLIENT_SECRET=foo NO_CACHE=true nyc --reporter=lcovonly --reporter=text ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit",
-    "deploy:backend": "zip archive.zip -r -X ./index.js ./package.json ./node_modules ./src ./data && aws lambda update-function-code --function-name WaitSmart-Dev --zip-file fileb://archive.zip && rm archive.zip",
-    "deploy:frontend": "echo \"Use aws s3 cli to update bucket with built objects\"",
+    "deploy": "zip archive.zip -r -X ./index.js ./package.json ./node_modules ./src ./data && aws lambda update-function-code --function-name WaitSmart-Dev --zip-file fileb://archive.zip && rm archive.zip",
     "test": "NODE_ENV=test NO_CACHE=true ./node_modules/.bin/mocha './tests/**/**.test.js' --timeout 10000 --exit",
     "bump": "npm version patch --force",
     "tag": "PACKAGE_VERSION=$(cat package.json | grep version | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag $PACKAGE_VERSION && git push --tags"
