@@ -10,7 +10,7 @@ import LineChart from "../../components/LineChart/LineChart";
 import {getRide} from "../../actions/actions";
 import Map from '../../components/Map/Map';
 import {IS_PROD} from "../../constants";
-import {parkNameForId} from "../../util";
+import {parkNameForId, waitTimeToString} from "../../util";
 
 const mapStateToProps = (state) => ({
    ride: state.rides.ridesMap,
@@ -57,7 +57,7 @@ const RideDetail = (props) => {
                     </p>
                     <h3>Current Wait</h3>
                     <p className="body-text">
-                        { ride.waitTimes.length > 0 ? `${ride.waitTimes[ride.waitTimes.length - 1].wait } minutes` : 'Unknown'}
+                        { ride.waitTimes.length > 0 ? waitTimeToString(ride.waitTimes[ride.waitTimes.length - 1].wait) : 'Unknown'}
                     </p>
                     <h3>Park</h3>
                     <p className="body-text">

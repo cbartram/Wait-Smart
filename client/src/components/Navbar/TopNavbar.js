@@ -1,10 +1,10 @@
 import React, {useState} from "react";
-import {Menu} from "semantic-ui-react";
+import {Menu, Image} from "semantic-ui-react";
 import {withRouter} from 'react-router-dom';
 import {connect} from 'react-redux';
 import Fuse from 'fuse.js'
 import Logo from "../../resources/images/logo.png";
-import {matchSearchQuery, parkNameForId} from "../../util";
+import {matchSearchQuery, parkNameForId, waitTimeToString} from "../../util";
 import SearchField from "../SearchField/SearchField";
 
 const mapStateToProps = state => ({
@@ -30,7 +30,7 @@ const TopNavbar = (props) => {
         if (items.length === 0) return acc;
         const updatedItems = items.map(item => ({
                 id: item.Id,
-                title: item.Category === "Rides" ? `${item.MblDisplayName} - ${item.WaitTime} min wait` : item.MblDisplayName,
+                title: item.Category === "Rides" ? `${item.MblDisplayName} ${waitTimeToString(item.WaitTime)}` : item.MblDisplayName,
                 image: item.ThumbnailImage,
                 category: <span className="ui label">{item.Category.replace(/([A-Z])/g, ' $1').trim()}</span>,
                 park: <span className="ui label secondary">{parkNameForId(item.LandId)}</span>
@@ -72,7 +72,7 @@ const TopNavbar = (props) => {
     const renderSearchRow = (item) => {
         return (
             <div className="d-flex align-items-center px-3 py-2 search-row-item">
-                {/*<Image avatar height={30} width={30} src={item.images[0]} />*/}
+                <Image rounded avatar src={item.image} style={{ height: 40, width: 40 }} />
                 <div className="d-flex flex-column">
                     { matchSearchQuery(value, item.title) }
                     {item.category}

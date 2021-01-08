@@ -5,6 +5,7 @@
  */
 import React from 'react';
 import isNil from 'lodash/isNil';
+import isNumber from 'lodash/isNumber';
 import { getRequestUrl } from "./constants";
 
 /**
@@ -153,6 +154,31 @@ export const post = async (body, path, requestType, successType, failureType, di
     }
 };
 
+
+/**
+ * Maps negative wait times to their specified text for the ride status. Returns
+ * unknown for invalid parameters or unknown integer
+ * @param waitTime Integer wait time integer.
+ * @returns {string|*}
+ */
+export const waitTimeToString = (waitTime) => {
+    if(!isNumber(waitTime)) return "Unknown";
+    if(waitTime >= 0) return `${waitTime} min wait`;
+    switch (waitTime) {
+        case -1:
+            return "Park Closed";
+        case -3:
+            return "Closed";
+        case -9:
+            return "Virtual Line";
+        case -2:
+        case -4:
+            return "Delayed";
+        default:
+            console.log(`[WARN] Wait time with value: ${waitTime} is unknown. Check universal app for ride status.`);
+            return "Unknown";
+    }
+}
 
 /**
  * Given the land the ride is in (Seuss world, jurassic land, simpsons land etc) returns the parks

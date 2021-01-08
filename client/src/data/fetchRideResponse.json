@@ -1,5 +1,7 @@
 {
-  "waitTimes": [],
+  "waitTimes": [{
+    "wait": 50
+  }],
   "MinHeightInInches": 40,
   "MaxHeightInInches": null,
   "ExpressPassAccepted": true,
