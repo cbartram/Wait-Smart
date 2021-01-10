@@ -90,7 +90,7 @@ describe('GET /', () => {
 
         const response = await index.handler({ httpMethod: 'GET', path: '/' }, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(500);
+        expect(response.statusCode).to.be.a('number').that.equals(501);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
         expect(res.message).to.be.a('string').that.deep.equals('Failed to retrieve point of interest data from Universal API')
@@ -184,7 +184,7 @@ describe('GET /rides', () => {
 
         const response = await index.handler({httpMethod: 'GET', path: '/rides'}, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(500);
+        expect(response.statusCode).to.be.a('number').that.equals(501);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
         expect(res.rides.length).to.be.a('number').that.deep.equals(32)
@@ -223,7 +223,7 @@ describe('GET /rides/park', () => {
 
         const response = await index.handler({ httpMethod: 'GET', path: '/rides/park' }, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(500);
+        expect(response.statusCode).to.be.a('number').that.equals(501);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
         expect(res.message).to.be.a('string').that.deep.equals("Failed to retrieve ride data from Universal API")

@@ -64,7 +64,7 @@
     "chalk": "^3.0.0",
     "chart.js": "^2.9.3",
     "dotenv": "^8.2.0",
-    "lambda-api-router": "^1.0.4",
+    "lambda-api-router": "^1.0.6",
     "moment": "^2.24.0",
     "redis": "^2.8.0",
     "request": "^2.88.0",

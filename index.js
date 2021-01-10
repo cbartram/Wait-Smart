@@ -21,6 +21,9 @@ const ddb = new AWS.DynamoDB.DocumentClient();
 const app = new Api();
 
 app.cors();
+app.use((req) => {
+    NODE_ENV !== 'test' && console.log(`[${req.httpMethod}] -- ${req.path}`);
+});
 
 /**
  * Finds all points of interest for the Universal API including: nighlife, restrooms,
@@ -34,7 +37,7 @@ app.get('/', async (req, res) => {
         res.json(poi);
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
-        res.status(500).json({
+        res.status(501).json({
             message: 'Failed to retrieve point of interest data from Universal API',
             poi: poiData,
             error: err
@@ -56,7 +59,7 @@ app.get('/rides/park', async (req, res) => {
         });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(500).json({
+        res.status(501).json({
             message: 'Failed to retrieve ride data from Universal API',
             parks: _.groupBy(poiData.Rides, 'LandId'),
             error: err
@@ -115,7 +118,7 @@ app.get('/rides', async (req, res) => {
         res.status(200).json({ rides: poi.Rides });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(500).json({
+        res.status(501).json({
             rides: poiData.Rides,
             message: 'Failed to retrieve ride data from Universal API. Data may be stale and out of date.',
             error: err
