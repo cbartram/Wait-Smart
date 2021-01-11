@@ -14,6 +14,9 @@ export const DEV_URL = 'https://a9y4qru7dg.execute-api.us-east-1.amazonaws.com/d
  */
 export const IS_PROD = window.location.hostname !== 'localhost' || process.env.REACT_APP_NODE_ENV === 'production';
 
+// This value allows us to override and actually make real API calls to the backend when testing locally.
+export const OVERRIDE_MOCK_API_CALL = true;
+
 /**
  * Helper function which determines the correct API to hit (prod,dev) and the correct region to use.
  * Note: this defaults to the east region if the REACT_APP_API_REGION is not declared.

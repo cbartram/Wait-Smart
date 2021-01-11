@@ -11,7 +11,7 @@ import {
     FETCH_RIDE_SUCCESS,
     FETCH_RIDES_SUCCESS,
     IS_PROD,
-    LOAD_POINTS_OF_INTEREST
+    LOAD_POINTS_OF_INTEREST, OVERRIDE_MOCK_API_CALL
 } from "../constants";
 
 
@@ -33,7 +33,7 @@ export const loadPointsOfInterest = (payload) => {
  * @returns {function(...[*]=)}
  */
 export const getRide = (rideId) => async (dispatch, getState) => {
-    if(!IS_PROD) {
+    if(!IS_PROD && !OVERRIDE_MOCK_API_CALL) {
         console.log('[INFO] Local environment detected. Mocking fetchRide() API call.')
         // Simulate API call time and network latency
         // and mock by returning a static success response with real data
@@ -54,7 +54,7 @@ export const getRide = (rideId) => async (dispatch, getState) => {
  * @returns {function(...[*]=)}
  */
 export const getRides = () => async (dispatch, getState) => {
-    if(!IS_PROD) {
+    if(!IS_PROD && !OVERRIDE_MOCK_API_CALL) {
         console.log('[INFO] Local environment detected. Mocking fetchRides() API call.')
         // Simulate API call time and network latency
         // and mock by returning a static success response with real data
@@ -76,7 +76,7 @@ export const getRides = () => async (dispatch, getState) => {
  * @returns {function(...[*]=)}
  */
 export const getPark = (parkId) => async (dispatch, getState) => {
-    if(!IS_PROD) {
+    if(!IS_PROD && !OVERRIDE_MOCK_API_CALL) {
         console.log('[INFO] Local environment detected. Mocking fetchPark() API call.')
         setTimeout(() => {
             dispatch({

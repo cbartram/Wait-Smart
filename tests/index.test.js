@@ -75,9 +75,9 @@ describe('GET /', () => {
         expect(response.statusCode).to.be.a('number').that.equals(200);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
-        expect(res.Rides).to.be.a('array').that.deep.equals([])
-        expect(res.Restaurants).to.be.a('array').that.deep.equals([])
-        expect(res.ATMS).to.be.a('array').that.deep.equals([])
+        expect(res.poi.Rides).to.be.a('array').that.deep.equals([])
+        expect(res.poi.Restaurants).to.be.a('array').that.deep.equals([])
+        expect(res.poi.ATMS).to.be.a('array').that.deep.equals([])
     });
 
     it('Catches an error when universal API call fails', async () => {
@@ -90,10 +90,10 @@ describe('GET /', () => {
 
         const response = await index.handler({ httpMethod: 'GET', path: '/' }, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(501);
+        expect(response.statusCode).to.be.a('number').that.equals(405);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
-        expect(res.message).to.be.a('string').that.deep.equals('Failed to retrieve point of interest data from Universal API')
+        expect(res.message).to.be.a('string').that.deep.equals('Access Denied: Failed to retrieve point of interest data from Universal API')
     });
 });
 
@@ -184,11 +184,11 @@ describe('GET /rides', () => {
 
         const response = await index.handler({httpMethod: 'GET', path: '/rides'}, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(501);
+        expect(response.statusCode).to.be.a('number').that.equals(405);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
         expect(res.rides.length).to.be.a('number').that.deep.equals(32)
-        expect(res.message).to.be.a('string').that.deep.equals('Failed to retrieve ride data from Universal API. Data may be stale and out of date.')
+        expect(res.message).to.be.a('string').that.deep.equals('Access Denied: Failed to retrieve ride data from Universal API. Data may be stale and out of date.')
     });
 });
 
@@ -223,10 +223,10 @@ describe('GET /rides/park', () => {
 
         const response = await index.handler({ httpMethod: 'GET', path: '/rides/park' }, null);
 
-        expect(response.statusCode).to.be.a('number').that.equals(501);
+        expect(response.statusCode).to.be.a('number').that.equals(405);
         expect(response.body).to.be.a('string');
         const res = JSON.parse(response.body);
-        expect(res.message).to.be.a('string').that.deep.equals("Failed to retrieve ride data from Universal API")
+        expect(res.message).to.be.a('string').that.deep.equals("AccessDenied: Cannot retrieve ride data from Universal API")
         expect(res.parks).to.be.a('object');
     });
 });

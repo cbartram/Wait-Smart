@@ -125,6 +125,9 @@ export const post = async (body, path, requestType, successType, failureType, di
         debug && console.log('[DEBUG] Post Response: ', response);
 
         return new Promise((resolve, reject) => {
+            // 501 is a special status code sent from the server. If a 501 is received it means
+            // that something failed while communicating with universal API's downstream but we
+            // can still serve semi-stale data and at least load the page on the frontend.
             if (response.statusCode === 200) {
                 doDispatch &&
                 dispatch({
@@ -248,9 +251,13 @@ export const get = async (path, requestType, successType, failureType, dispatch,
         };
 
         const response = await (await fetch(getRequestUrl(path), params)).json();
+        console.log(response);
         debug && console.log('[DEBUG] GET Response: ', response);
 
         return new Promise((resolve, reject) => {
+            // 501 is a special status code sent from the server. If a 501 is received it means
+            // that something failed while communicating with universal API's downstream but we
+            // can still serve semi-stale data and at least load the page on the frontend.
             if (response.statusCode === 200) {
                 doDispatch &&
                 dispatch({

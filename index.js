@@ -34,11 +34,15 @@ app.get('/', async (req, res) => {
         console.log('[INFO] Finding All POI Data...');
         const access_token = await getUniversalAccessToken();
         const poi = await getPointsOfInterest(access_token);
-        res.json(poi);
+        res.json({
+            statusCode: 200,
+            poi,
+        });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve point of interest data from Universal API: ', err);
-        res.status(501).json({
-            message: 'Failed to retrieve point of interest data from Universal API',
+        res.status(405).json({
+            statusCode: 405,
+            message: 'Access Denied: Failed to retrieve point of interest data from Universal API',
             poi: poiData,
             error: err
         });
@@ -55,12 +59,14 @@ app.get('/rides/park', async (req, res) => {
         const poi = await getPointsOfInterest(access_token);
         console.log('[INFO] Successfully fetched points of interest and access token. Token =', access_token);
         res.status(200).json({
-            parks: _.groupBy(poi.Rides, 'LandId')
+            parks: _.groupBy(poi.Rides, 'LandId'),
+            statusCode: 200,
         });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(501).json({
-            message: 'Failed to retrieve ride data from Universal API',
+        res.status(405).json({
+            statusCode: 405,
+            message: 'AccessDenied: Cannot retrieve ride data from Universal API',
             parks: _.groupBy(poiData.Rides, 'LandId'),
             error: err
         });
@@ -76,7 +82,8 @@ app.get('/rides/park/:parkId', async (req, res) => {
         console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.parkId);
         res.status(400).json({
             error: new Error('The park id must be an integer between 4 and 6 digits long.'),
-            message: 'The park id must be an integer between 4 and 6 digits long.'
+            message: 'The park id must be an integer between 4 and 6 digits long.',
+            statusCode: 400,
         });
         return;
     }
@@ -93,11 +100,13 @@ app.get('/rides/park/:parkId', async (req, res) => {
         }).promise();
         res.status(200).json({
             park: Items,
-            id: req.params.parkId
+            id: req.params.parkId,
+            statusCode: 200,
         });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from DynamoDb: ', err);
         res.status(500).json({
+            statusCode: 500,
             message: 'Failed to retrieve ride data from Database',
             error: err
         });
@@ -115,12 +124,13 @@ app.get('/rides', async (req, res) => {
         const access_token = await getUniversalAccessToken();
         console.log(`[INFO] Access token fetched successfully: ${access_token}. Finding points of interest...`);
         const poi = await getPointsOfInterest(access_token);
-        res.status(200).json({ rides: poi.Rides });
+        res.status(200).json({ rides: poi.Rides, statusCode: 200 });
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to retrieve ride data from Universal API: ', err);
-        res.status(501).json({
+        res.status(405).json({
+            statusCode: 405,
             rides: poiData.Rides,
-            message: 'Failed to retrieve ride data from Universal API. Data may be stale and out of date.',
+            message: 'Access Denied: Failed to retrieve ride data from Universal API. Data may be stale and out of date.',
             error: err
         });
     }
@@ -136,6 +146,7 @@ app.get('/rides/:id', async (req, res) => {
     if(!isValidParkId(req.params.id)) {
         console.log('[WARN] Regular expression: \\d{4,6} does not match given parameter: ', req.params.id);
         res.status(400).json({
+            statusCode: 400,
             error: new Error('The ride id must be an integer between 4 and 6 digits long.'),
             message: 'The ride id must be an integer between 4 and 6 digits long.'
         });
@@ -155,6 +166,7 @@ app.get('/rides/:id', async (req, res) => {
 
         if(Items.length === 0) {
             res.status(404).json({
+                statusCode: 404,
                 message: `Could not find ride data for ride id: ${req.params.id}. Ensure the ride id is valid and specified correctly.`,
             });
             return;
@@ -165,14 +177,26 @@ app.get('/rides/:id', async (req, res) => {
             console.log('[INFO] Cache is disabled. Finding ride meta-data via local json file for ride id: ', req.params.id);
             const rideMetadata = _.find(poiData.Rides, ride => ride.Id === +req.params.id);
             console.log('[INFO] Located ride metadata: ', rideMetadata)
-            res.status(200).json({ waitTimes: Items, ...rideMetadata });
+            res.status(200).json({
+                waitTimes: Items,
+                statusCode: 200,
+                ...rideMetadata
+            });
         } else {
             const rideMetadata = JSON.parse(await cache.getAsync(req.params.id));
-            res.status(200).json({...rideMetadata, waitTimes: Items});
+            res.status(200).json({
+                ...rideMetadata,
+                waitTimes: Items,
+                statusCode: 200,
+            });
         }
     } catch(err) {
         NODE_ENV !== "test" && console.log('[ERROR] Failed to query for ride wait times within given range.', err);
-        res.status(500).json({ message: 'Failed to query for ride wait times within the given range.', error: err });
+        res.status(500).json({
+            message: 'Failed to query for ride wait times within the given range.',
+            error: err,
+            statusCode: 500,
+        });
     }
 });
 
