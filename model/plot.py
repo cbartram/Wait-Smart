@@ -84,13 +84,13 @@ def baseline(history):
 
 tf.random.set_seed(13)
 
-df = pd.read_csv('../data/waitsmart_ride_wait_times.csv')
-df = df.groupby('ride')
+df = pd.read_csv('../data/2020_03_09.csv')
+df = df.groupby('id')
 df = df.get_group(10135)
 
-uni_data = df['wait']
-uni_data.index = df['timestamp']
-uni_data.head()
+uni_data = df['y']
+uni_data.index = df['ds']
+print(uni_data.head())
 
 uni_data = uni_data.values
 uni_data_values = uni_data
@@ -144,4 +144,4 @@ for x, y in val_univariate.take(3):
     print("Predicted wait time: ")
     print(predicted_wait_time)
     plot = show_plot([x[0].numpy(), y[0].numpy(), simple_lstm_model.predict(x)[0]], 0, 'Simple LSTM model')
-    # plot.show()
+    plot.show()

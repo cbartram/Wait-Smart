@@ -22,11 +22,12 @@ class LineChart extends Component {
         labels,
         datasets: [{
             label: "Average Wait Time (minutes)",
-            backgroundColor: '#58a6ff',
+            fill: false,
+            borderColor: "#58a6ff",
             pointBackgroundColor: '#FFFFFF',
             pointBorderColor: '#58a6ff',
             pointBorderWidth: 2,
-            lineTension: 0,
+            lineTension: .3,
             cubicInterpolationMode: 'default',
             data,
             // Basically only draws every 5th point
@@ -43,13 +44,13 @@ class LineChart extends Component {
           scales: {
             xAxes: [{
               gridLines: {
-                display: true,
+                display: false,
               }
             }],
             yAxes: [{
               stacked: true,
               gridLines: {
-                display: true,
+                display: false,
               }
             }]
           },
