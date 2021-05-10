@@ -70,7 +70,7 @@ PyYAML==5.4
 pyzmq==17.0.0
 qtconsole==4.3.1
 requests==2.21.0
-rsa==4.1
+rsa==4.7
 s3transfer==0.1.11
 scandir==1.7
 scipy==1.2.1
